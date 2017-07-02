@@ -1,0 +1,62 @@
+{
+  "name": "cosmic-crypt",
+  "version": "1.0.0",
+  "description": "utility to reduce boilerplate when encrypting/decrypting text",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc mocha",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CDoughty08/cosmic-crypt.git"
+  },
+  "author": "Cody Doughty",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CDoughty08/cosmic-crypt/issues"
+  },
+  "homepage": "https://github.com/CDoughty08/cosmic-crypt#readme",
+  "nyc": {
+    "check-coverage": true,
+    "lines": 99,
+    "statements": 99,
+    "functions": 99,
+    "branches": 99,
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "src/**/*.spec.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html",
+      "lcov"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "all": true
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.1",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^8.0.7",
+    "@types/sinon": "^2.3.2",
+    "chai": "^4.0.2",
+    "coveralls": "^2.13.1",
+    "mocha": "^3.4.2",
+    "nyc": "^11.0.3",
+    "sinon": "^2.3.6",
+    "source-map-support": "^0.4.15",
+    "ts-node": "^3.1.0",
+    "tslint": "^5.4.3",
+    "typescript": "^2.4.1"
+  }
+}
