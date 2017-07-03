@@ -9,7 +9,7 @@
     "build": "tsc -p ./tsconfig.publish.json .",
     "dev": "concurrently -n tsc,mocha -c cyan,green \"tsc -p ./tsconfig.json --watch\" \"mocha --watch\"",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
-    "prepublish": "tsc -p tsconfig.publish.json"
+    "prepublishOnly": "tsc -p tsconfig.publish.json"
   },
   "repository": {
     "type": "git",
