@@ -8,7 +8,7 @@ import {
 
 } from './';
 
-interface KeyMetadata {
+export interface KeyMetadata {
   derivedKey: Buffer;
   hmacKey: Buffer;
 }

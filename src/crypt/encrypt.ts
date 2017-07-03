@@ -39,10 +39,10 @@ export async function encrypt(buffer: Buffer, password: Buffer, iv: Buffer, salt
 
   const hmac = crypto.createHmac(HMAC_ALGORITHM, keyInfo.hmacKey);
 
-  const data = [
-    cipher.update(buffer, 'utf8', 'hex'),
-    cipher.final('hex')
-  ].join('');
+  const data = Buffer.concat([
+    cipher.update(buffer),
+    cipher.final()
+  ]).toString('hex');
 
   hmac.update(data);
   hmac.update(ivHex);

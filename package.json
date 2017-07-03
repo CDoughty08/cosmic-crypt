@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "utility to reduce boilerplate when encrypting/decrypting text",
   "main": "dist/index.js",
+  "types": "dist.index.d.ts",
   "scripts": {
     "test": "nyc mocha",
     "build": "tsc -p ./tsconfig.publish.json .",
     "dev": "concurrently -n tsc,mocha -c cyan,green \"tsc -p ./tsconfig.json --watch\" \"mocha --watch\"",
-    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
+    "prepublish": "rm dist -r && tsc -p tsconfig.publish.json"
   },
   "repository": {
     "type": "git",

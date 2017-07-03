@@ -7,6 +7,10 @@ import {
   unpack
 } from '../utility';
 
+export enum DecryptErrorCode {
+  AUTHENTICATION_ERROR
+}
+
 export async function decrypt(buffer: Buffer, password: Buffer): Promise<Buffer> {
   const data = unpack(buffer);
 
@@ -21,14 +25,14 @@ export async function decrypt(buffer: Buffer, password: Buffer): Promise<Buffer>
   const digest = Buffer.from(hmac.digest('hex'));
 
   if ( !crypto.timingSafeEqual(data.hmac, digest) ) {
-    throw new Error('Decrypt Authentication Error');
+    throw { code: DecryptErrorCode.AUTHENTICATION_ERROR, message: 'Decrypt Authentication Error' };
   }
 
   const cipher = crypto.createDecipheriv(ENCRYPT_ALGORITHM, keyInfo.derivedKey, Buffer.from(data.iv.toString(), 'hex'));
 
   const deciphered = Buffer.from([
-    cipher.update(data.encrypted.toString(), 'hex', 'utf8'),
-    cipher.final('utf8')
+    cipher.update(data.encrypted.toString(), 'hex', 'binary'),
+    cipher.final('binary')
   ].join(''));
 
   return deciphered;

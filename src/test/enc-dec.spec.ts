@@ -1,6 +1,12 @@
 import { assert } from 'chai';
 
-import { decrypt, encrypt, EncryptErrorCode } from '../';
+import {
+  decrypt,
+  DecryptErrorCode,
+  encrypt,
+  EncryptErrorCode,
+  UnpackErrorCode
+} from '../';
 
 describe('Encrypt/Decrypt', () => {
   const text = Buffer.from('Test Data!');
@@ -48,7 +54,7 @@ describe('Encrypt/Decrypt', () => {
       assert(!await decrypt(invalidEncryptedData, password), 'Should be authentication error');
     }
     catch (e) {
-      assert(e.message === 'Decrypt Authentication Error', e.message);
+      assert(e.code === DecryptErrorCode.AUTHENTICATION_ERROR, e.message);
     }
   });
 
@@ -58,7 +64,7 @@ describe('Encrypt/Decrypt', () => {
       assert(!await decrypt(invalidEncryptedData, password), 'Should be decrypt error');
     }
     catch (e) {
-      assert(e.message === 'Decrypt Error', e.message);
+      assert(e.code === UnpackErrorCode.INVALID_META_LENGTH, e.message);
     }
   });
 
@@ -69,7 +75,7 @@ describe('Encrypt/Decrypt', () => {
       assert(!await decrypt(invalidEncryptedData, password), 'Should be decrypt error');
     }
     catch (e) {
-      assert(e.message === 'Decrypt Error', e.message);
+      assert(e.code === UnpackErrorCode.INVALID_ENCRYPTED_DATA, e.message);
     }
   });
 
