@@ -1,6 +1,6 @@
 {
   "name": "cosmic-crypt",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "utility to reduce boilerplate when encrypting/decrypting text",
   "main": "dist/index.js",
   "types": "dist.index.d.ts",
@@ -30,8 +30,7 @@
     "include": [
       "src/**/*.ts"
     ],
-    "exclude": [
-    ],
+    "exclude": [],
     "extension": [
       ".ts"
     ],
