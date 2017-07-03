@@ -3,6 +3,7 @@
     "./src"
   ],
   "exclude": [
+    "./src/test"
   ],
   "compilerOptions": {
     /* Basic Options */
