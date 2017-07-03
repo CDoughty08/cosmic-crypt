@@ -2,9 +2,11 @@
   "name": "cosmic-crypt",
   "version": "1.0.0",
   "description": "utility to reduce boilerplate when encrypting/decrypting text",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "nyc mocha",
+    "build": "tsc -p ./tsconfig.publish.json .",
+    "dev": "concurrently -n tsc,mocha -c cyan,green \"tsc -p ./tsconfig.json --watch\" \"mocha --watch\"",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {
@@ -27,7 +29,6 @@
       "src/**/*.ts"
     ],
     "exclude": [
-      "src/**/*.spec.ts"
     ],
     "extension": [
       ".ts"
@@ -45,11 +46,15 @@
     "all": true
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.8",
     "@types/chai": "^4.0.1",
+    "@types/commander": "^2.9.1",
+    "@types/inquirer": "0.0.35",
     "@types/mocha": "^2.2.41",
     "@types/node": "^8.0.7",
     "@types/sinon": "^2.3.2",
     "chai": "^4.0.2",
+    "concurrently": "^3.5.0",
     "coveralls": "^2.13.1",
     "mocha": "^3.4.2",
     "nyc": "^11.0.3",
@@ -58,5 +63,10 @@
     "ts-node": "^3.1.0",
     "tslint": "^5.4.3",
     "typescript": "^2.4.1"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "commander": "^2.10.0",
+    "inquirer": "^3.1.1"
   }
 }

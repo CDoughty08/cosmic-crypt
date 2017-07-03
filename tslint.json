@@ -12,6 +12,17 @@
         "quotemark": [
             true,
             "single"
+        ],
+        "trailing-comma": [
+            false
+        ],
+        "max-line-length": [
+            true,
+            180
+        ],
+        "interface-name": [
+            true,
+            "never-prefix"
         ]
     },
     "rulesDirectory": []
