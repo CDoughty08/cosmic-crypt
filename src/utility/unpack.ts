@@ -1,6 +1,7 @@
 import {
   HMAC_LENGTH,
   IV_LENGTH,
+  MARKER,
   SALT_LENGTH
 } from './';
 
@@ -12,18 +13,23 @@ export interface EncryptedData {
 }
 
 export enum UnpackErrorCode {
+  MISSING_MARKER,
   INVALID_META_LENGTH,
   INVALID_ENCRYPTED_DATA
 }
 
 export function unpack(buffer: Buffer): EncryptedData {
-  const metaLength = ( HMAC_LENGTH * 2 ) + ( IV_LENGTH * 2) + ( SALT_LENGTH * 2);
+  const metaLength = ( MARKER.length * 2) + ( HMAC_LENGTH * 2 ) + ( IV_LENGTH * 2) + ( SALT_LENGTH * 2);
   if ( buffer.length < metaLength ) {
     throw { code: UnpackErrorCode.INVALID_META_LENGTH, message: 'Decrypt Error' };
   }
 
-  let offset = 0;
-  const iv = buffer.slice(offset, IV_LENGTH * 2);
+  if ( Buffer.from(buffer.slice(0, MARKER.length * 2).toString(), 'hex').compare(Buffer.from(MARKER)) !== 0 ) {
+    throw { code: UnpackErrorCode.MISSING_MARKER, message: 'Decrypt Error' };
+  }
+
+  let offset = MARKER.length * 2;
+  const iv = buffer.slice(offset, IV_LENGTH * 2 + offset);
 
   offset += IV_LENGTH * 2;
   const salt = buffer.slice(offset, SALT_LENGTH * 2 + offset);

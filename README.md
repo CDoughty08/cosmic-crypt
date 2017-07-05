@@ -46,7 +46,7 @@ Passwords must be 64 bytes or larger.
 
 The Salt must be 32 bytes.
 
-pbkdf2 iterations is set to 100000.
+pbkdf2 iterations is set to 10000.
 
 Supplied Error Codes
 ====================

@@ -4,7 +4,10 @@ import {
   deriveKey,
   ENCRYPT_ALGORITHM,
   HMAC_ALGORITHM,
-  unpack
+  MARKER,
+  unpack,
+
+  VERSION
 } from '../utility';
 
 export enum DecryptErrorCode {
@@ -18,6 +21,8 @@ export async function decrypt(buffer: Buffer, password: Buffer): Promise<Buffer>
 
   const hmac = crypto.createHmac(HMAC_ALGORITHM, keyInfo.hmacKey);
 
+  hmac.update(MARKER);
+  hmac.update(VERSION);
   hmac.update(data.encrypted);
   hmac.update(data.iv);
   hmac.update(data.salt);

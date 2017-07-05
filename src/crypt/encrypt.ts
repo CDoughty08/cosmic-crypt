@@ -6,7 +6,11 @@ import {
 
   IV_LENGTH,
   PASS_LENGTH,
-  SALT_LENGTH
+  SALT_LENGTH,
+
+  // tslint:disable-next-line:ordered-imports
+  VERSION,
+  MARKER
 } from '../utility';
 
 import * as crypto from 'crypto';
@@ -44,6 +48,8 @@ export async function encrypt(buffer: Buffer, password: Buffer, iv: Buffer, salt
     cipher.final()
   ]).toString('hex');
 
+  hmac.update(MARKER);
+  hmac.update(VERSION);
   hmac.update(data);
   hmac.update(ivHex);
   hmac.update(saltHex);
@@ -51,6 +57,7 @@ export async function encrypt(buffer: Buffer, password: Buffer, iv: Buffer, salt
   const digest = hmac.digest('hex');
 
   return Buffer.from([
+    Buffer.from(MARKER).toString('hex'),
     ivHex,
     saltHex,
     digest,
