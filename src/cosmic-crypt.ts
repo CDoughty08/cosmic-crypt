@@ -44,4 +44,16 @@ export class CosmicCrypt {
     public static async decrypt(buffer: Buffer, password: Buffer): Promise<Buffer> {
         return await decrypt(buffer, password);
     }
+
+    /**
+     * returns true if buffer starts with CosmicCrypt marker
+     * 
+     * @static
+     * @param {Buffer} buffer
+     * @returns {boolean}
+     * @memberof CosmicCrypt
+     */
+    public static isCosmicCryptBuffer(buffer: Buffer): boolean {
+        return ( Buffer.from(buffer.slice(0, utility.MARKER.length * 2).toString(), 'hex').compare(Buffer.from(utility.MARKER)) === 0 );
+    }
 }
