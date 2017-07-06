@@ -12,5 +12,5 @@ export const HMAC_LENGTH = 64;
 export const SALT_LENGTH = 32;
 
 // tslint:disable-next-line:no-var-requires
-export const VERSION = require('../../package.json').version;
-export const MARKER = 'CCRYPT';
+export const VERSION = require('../../package.json').version as string;
+export const MARKER = 'CCRYPT' as string;

@@ -11,3 +11,5 @@ export type pbkdf2Type      = (password: string | Buffer, salt: string | Buffer,
 export const randomBytes: randomBytesType = promise.promisify(crypto.randomBytes);
 export const randomFill: randomFillType   = promise.promisify(crypto.randomFill);
 export const pbkdf2: pbkdf2Type           = promise.promisify(crypto.pbkdf2);
+
+export { pbkdf2Sync, randomBytes as randomBytesSync } from 'crypto';

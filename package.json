@@ -4,6 +4,7 @@
   "description": "utility to reduce boilerplate when encrypting/decrypting text",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": "./dist/cli/index.js",
   "scripts": {
     "test": "nyc mocha",
     "build": "tsc -p ./tsconfig.publish.json .",
@@ -31,7 +32,8 @@
       "src/**/*.ts"
     ],
     "exclude": [
-      "src/cosmic-crypt.ts"
+      "src/cosmic-crypt.ts",
+      "src/cli/index.ts"
     ],
     "extension": [
       ".ts"

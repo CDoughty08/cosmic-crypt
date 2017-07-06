@@ -1,5 +1,6 @@
 import {
   deriveKey,
+  deriveKeySync,
 
   ENCRYPT_ALGORITHM,
   HMAC_ALGORITHM,
@@ -9,7 +10,7 @@ import {
   SALT_LENGTH,
 
   // tslint:disable-next-line:ordered-imports
-  VERSION,
+  // VERSION,
   MARKER
 } from '../utility';
 
@@ -49,7 +50,51 @@ export async function encrypt(buffer: Buffer, password: Buffer, iv: Buffer, salt
   ]).toString('hex');
 
   hmac.update(MARKER);
-  hmac.update(VERSION);
+  // hmac.update(VERSION);
+  hmac.update(data);
+  hmac.update(ivHex);
+  hmac.update(saltHex);
+
+  const digest = hmac.digest('hex');
+
+  return Buffer.from([
+    Buffer.from(MARKER).toString('hex'),
+    ivHex,
+    saltHex,
+    digest,
+    data
+  ].join(''));
+}
+
+export function encryptSync(buffer: Buffer, password: Buffer, iv: Buffer, salt: Buffer): Buffer {
+  if (password.length < PASS_LENGTH) {
+    throw { code: EncryptErrorCode.PASSWORD_TOO_SHORT, message: `Password must be ${PASS_LENGTH} bytes or more.` };
+  }
+
+  if (salt.length !== SALT_LENGTH) {
+    throw { code: EncryptErrorCode.SALT_INVALID_LENGTH, message: `Salt must be ${SALT_LENGTH} bytes.` };
+  }
+
+  if (iv.length !== IV_LENGTH) {
+    throw { code: EncryptErrorCode.IV_INVALID_LENGTH, message: `Initialization Vector must be ${IV_LENGTH} bytes.` };
+  }
+
+  const ivHex = iv.toString('hex');
+  const saltHex = salt.toString('hex');
+
+  const keyInfo = deriveKeySync(password, salt);
+
+  const cipher = crypto.createCipheriv(ENCRYPT_ALGORITHM, keyInfo.derivedKey, iv);
+
+  const hmac = crypto.createHmac(HMAC_ALGORITHM, keyInfo.hmacKey);
+
+  const data = Buffer.concat([
+    cipher.update(buffer),
+    cipher.final()
+  ]).toString('hex');
+
+  hmac.update(MARKER);
+  // hmac.update(VERSION);
   hmac.update(data);
   hmac.update(ivHex);
   hmac.update(saltHex);
