@@ -48,8 +48,7 @@ if (!commander.interactive) {
     switch (mode) {
       case 'encrypt':
         const creds = CosmicCrypt.generateCredentialsSync();
-        creds.password = commander.phrase ? Buffer.from(commander.phrase) : creds.password;
-
+        creds.password = commander.phrase ? Buffer.from(commander.phrase, 'hex') : creds.password;
         const encrypted = CosmicCrypt.encryptSync(data, creds);
         if ( !commander.phrase ) {
           console.log(`Generated password: ${creds.password.toString('hex')}`);
