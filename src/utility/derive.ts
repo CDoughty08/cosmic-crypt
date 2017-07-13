@@ -4,7 +4,6 @@ import {
   PASS_KEY_SIZE,
 
   pbkdf2,
-  PBKDF2_ROUNDS,
   pbkdf2Sync
 } from './';
 
@@ -13,11 +12,11 @@ export interface KeyMetadata {
   hmacKey: Buffer;
 }
 
-export async function deriveKey(password: Buffer, salt: Buffer): Promise<KeyMetadata> {
+export async function deriveKey(password: Buffer, salt: Buffer, rounds: number): Promise<KeyMetadata> {
   const key = await pbkdf2(
     password.toString('hex'),
     salt,
-    PBKDF2_ROUNDS,
+    rounds,
     PASS_KEY_SIZE,
     DERIVE_ALGORITHM
   );
@@ -31,11 +30,11 @@ export async function deriveKey(password: Buffer, salt: Buffer): Promise<KeyMeta
   };
 }
 
-export function deriveKeySync(password: Buffer, salt: Buffer): KeyMetadata {
+export function deriveKeySync(password: Buffer, salt: Buffer, rounds: number): KeyMetadata {
   const key = pbkdf2Sync(
     password.toString('hex'),
     salt,
-    PBKDF2_ROUNDS,
+    rounds,
     PASS_KEY_SIZE,
     DERIVE_ALGORITHM
   );

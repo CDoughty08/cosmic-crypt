@@ -18,19 +18,22 @@ export enum DecryptErrorCode {
 export async function decrypt(buffer: Buffer, password: Buffer): Promise<Buffer> {
   const data = unpack(buffer);
 
-  const keyInfo = await deriveKey(password, Buffer.from(data.salt.toString(), 'hex'));
+  const roundsBuffer = Buffer.from(data.rounds.toString(), 'hex');
+  const rounds = roundsBuffer.readInt32LE(0);
+
+  const keyInfo = await deriveKey(password, Buffer.from(data.salt.toString(), 'hex'), rounds);
 
   const hmac = crypto.createHmac(HMAC_ALGORITHM, keyInfo.hmacKey);
 
   hmac.update(MARKER);
-  // hmac.update(VERSION);
+  hmac.update(data.rounds);
   hmac.update(data.encrypted);
   hmac.update(data.iv);
   hmac.update(data.salt);
 
   const digest = Buffer.from(hmac.digest('hex'));
 
-  if ( !crypto.timingSafeEqual(data.hmac, digest) ) {
+  if (!crypto.timingSafeEqual(data.hmac, digest)) {
     throw { code: DecryptErrorCode.AUTHENTICATION_ERROR, message: 'Decrypt Authentication Error' };
   }
 
@@ -47,19 +50,22 @@ export async function decrypt(buffer: Buffer, password: Buffer): Promise<Buffer>
 export function decryptSync(buffer: Buffer, password: Buffer): Buffer {
   const data = unpack(buffer);
 
-  const keyInfo = deriveKeySync(password, Buffer.from(data.salt.toString(), 'hex'));
+  const roundsBuffer = Buffer.from(data.rounds.toString(), 'hex');
+  const rounds = roundsBuffer.readInt32LE(0);
+
+  const keyInfo = deriveKeySync(password, Buffer.from(data.salt.toString(), 'hex'), rounds);
 
   const hmac = crypto.createHmac(HMAC_ALGORITHM, keyInfo.hmacKey);
 
   hmac.update(MARKER);
-  // hmac.update(VERSION);
+  hmac.update(data.rounds);
   hmac.update(data.encrypted);
   hmac.update(data.iv);
   hmac.update(data.salt);
 
   const digest = Buffer.from(hmac.digest('hex'));
 
-  if ( !crypto.timingSafeEqual(data.hmac, digest) ) {
+  if (!crypto.timingSafeEqual(data.hmac, digest)) {
     throw { code: DecryptErrorCode.AUTHENTICATION_ERROR, message: 'Decrypt Authentication Error' };
   }
 
