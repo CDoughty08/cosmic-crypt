@@ -8,8 +8,6 @@ Installation
 npm install cosmic-crypt
 ```
 
-Compiles to ES2015 so node 6.9+ is recommended.
-
 Anytime the version of of this package changes the HMAC signatures will be invalid when decrypting. Either lock the version to what you need, or re-encrypt you content with the new version, when upgrading.
 
 Quickstart

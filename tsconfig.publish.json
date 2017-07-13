@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "target": "es5",
     "declaration": true,                      /* Generates corresponding '.d.ts' file. */
     "removeComments": true,                   /* Do not emit comments to output. */
     "inlineSourceMap": false,                 /* Emit a single file with source maps instead of having a separate file. */
