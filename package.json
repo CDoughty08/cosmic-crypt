@@ -1,6 +1,6 @@
 {
   "name": "cosmic-crypt",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "utility to reduce boilerplate when encrypting/decrypting text",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
