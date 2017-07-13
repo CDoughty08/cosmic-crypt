@@ -29,7 +29,7 @@ export function unpack(buffer: Buffer): EncryptedData {
   if ( Buffer.from(buffer.slice(0, MARKER.length * 2).toString(), 'hex').compare(Buffer.from(MARKER)) !== 0 ) {
     throw { code: UnpackErrorCode.MISSING_MARKER, message: 'Decrypt Error' };
   }
-  console.log(buffer.toString());
+
   let offset = MARKER.length * 2;
   const rounds = buffer.slice(offset, (ROUNDS_SIZE * 2) + offset );
   offset += ( ROUNDS_SIZE * 2);

@@ -24,7 +24,7 @@ export enum EncryptErrorCode {
   SALT_INVALID_LENGTH
 }
 
-export async function encrypt(buffer: Buffer, password: Buffer, iv: Buffer, salt: Buffer, rounds: number): Promise<Buffer> {
+export async function encrypt(buffer: Buffer, password: Buffer, iv: Buffer, salt: Buffer, rounds?: number): Promise<Buffer> {
   rounds = rounds || PBKDF2_ROUNDS;
 
   if (password.length < PASS_LENGTH) {
@@ -75,7 +75,7 @@ export async function encrypt(buffer: Buffer, password: Buffer, iv: Buffer, salt
   ].join(''));
 }
 
-export function encryptSync(buffer: Buffer, password: Buffer, iv: Buffer, salt: Buffer, rounds: number): Buffer {
+export function encryptSync(buffer: Buffer, password: Buffer, iv: Buffer, salt: Buffer, rounds?: number): Buffer {
   rounds = rounds || PBKDF2_ROUNDS;
   if (password.length < PASS_LENGTH) {
     throw { code: EncryptErrorCode.PASSWORD_TOO_SHORT, message: `Password must be ${PASS_LENGTH} bytes or more.` };
