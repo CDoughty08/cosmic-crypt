@@ -49,7 +49,7 @@ if (!commander.interactive) {
       case 'encrypt':
         const creds = CosmicCrypt.generateCredentialsSync();
         creds.password = commander.phrase ? Buffer.from(commander.phrase, 'hex') : creds.password;
-        const encrypted = CosmicCrypt.encryptSync(data, creds);
+        const encrypted = CosmicCrypt.encryptPBKDF2Sync(data, creds);
         if ( !commander.phrase ) {
           console.log(`Generated password: ${creds.password.toString('hex')}`);
         }
@@ -62,7 +62,7 @@ if (!commander.interactive) {
         }
         break;
       case 'decrypt':
-        const decrypted = CosmicCrypt.decryptSync(data, Buffer.from(commander.phrase, 'hex'));
+        const decrypted = CosmicCrypt.decryptPBKDF2Sync(data, Buffer.from(commander.phrase, 'hex'));
 
         if ( !commander.out ) {
           console.log(`Data: ${decrypted}`);

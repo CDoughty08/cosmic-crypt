@@ -18,13 +18,13 @@ Usage is extremely simple:
 import { CosmicCrypt } from './cosmic-crypt';
 
 async function sample() {
-    const credentials = await CosmicCrypt.generateCredentials();
+    const credentials = await CosmicCrypt.generatePBKDF2Credentials();
 
     const plainText = Buffer.from('Some sample data');
 
-    const sampleEncrypted = await CosmicCrypt.encrypt(plainText, credentials);
+    const sampleEncrypted = await CosmicCrypt.encryptPBKDF2(plainText, credentials);
 
-    const sampleDecrypted = await CosmicCrypt.decrypt(sampleEncrypted, credentials.password);
+    const sampleDecrypted = await CosmicCrypt.decryptPBKDF2(sampleEncrypted, credentials.password);
 
     console.log(`${sampleEncrypted.toString()}`);
     console.log(`${plainText.toString()} === ${sampleDecrypted.toString()}`);

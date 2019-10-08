@@ -1,4 +1,4 @@
 export { CosmicCrypt } from './cosmic-crypt';
-export { encrypt, encryptSync, EncryptErrorCode } from './crypt/encrypt';
-export { decrypt, decryptSync, DecryptErrorCode } from './crypt/decrypt';
+export { EncryptErrorCode } from './crypt/encrypt-pbkdf2';
+export { DecryptErrorCode } from './crypt/decrypt-pbkdf2';
 export { UnpackErrorCode } from './utility';

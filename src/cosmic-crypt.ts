@@ -1,5 +1,5 @@
-import { decrypt, decryptSync } from './crypt/decrypt';
-import { encrypt, encryptSync } from './crypt/encrypt';
+import { decryptPBKDF2, decryptPBKDF2Sync } from './crypt/decrypt-pbkdf2';
+import { encryptPBKDF2, encryptPBKDF2Sync } from './crypt/encrypt-pbkdf2';
 
 import * as utility from './utility';
 
@@ -12,10 +12,16 @@ export class CosmicCrypt {
      * @memberof CosmicCrypt
      */
     public static async generateCredentials(): Promise<utility.CryptCredentials> {
+        const res = await Promise.all([
+          utility.randomBytes(utility.PASS_LENGTH),
+          utility.randomBytes(utility.IV_LENGTH),
+          utility.randomBytes(utility.SALT_LENGTH)
+        ]);
+
         return {
-            iv: await utility.randomBytes(utility.IV_LENGTH),
-            password: await utility.randomBytes(utility.PASS_LENGTH),
-            salt: await utility.randomBytes(utility.SALT_LENGTH)
+            iv: res[0],
+            password: res[1],
+            salt: res[2]
         };
     }
 
@@ -26,8 +32,9 @@ export class CosmicCrypt {
             salt: utility.randomBytesSync(utility.SALT_LENGTH)
         };
     }
+
     /**
-     * Promise based asynchronous encryption
+     * asynchronous encryption
      *
      * @static
      * @param {Buffer} buffer
@@ -35,8 +42,8 @@ export class CosmicCrypt {
      * @returns {Promise<Buffer>}
      * @memberof CosmicCrypt
      */
-    public static async encrypt(buffer: Buffer, credentials: utility.CryptCredentials): Promise<Buffer> {
-        return await encrypt(buffer, credentials.password, credentials.iv, credentials.salt);
+    public static async encryptPBKDF2(buffer: Buffer, credentials: utility.CryptCredentials): Promise<Buffer> {
+        return encryptPBKDF2(buffer, credentials.password, credentials.iv, credentials.salt);
     }
 
     /**
@@ -48,12 +55,12 @@ export class CosmicCrypt {
      * @returns {Buffer}
      * @memberof CosmicCrypt
      */
-    public static encryptSync(buffer: Buffer, credentials: utility.CryptCredentials): Buffer {
-        return encryptSync(buffer, credentials.password, credentials.iv, credentials.salt);
+    public static encryptPBKDF2Sync(buffer: Buffer, credentials: utility.CryptCredentials): Buffer {
+        return encryptPBKDF2Sync(buffer, credentials.password, credentials.iv, credentials.salt);
     }
 
     /**
-     * Promise based asynchronous decryption
+     * asynchronous decryption
      *
      * @static
      * @param {Buffer} buffer
@@ -61,8 +68,8 @@ export class CosmicCrypt {
      * @returns {Promise<Buffer>}
      * @memberof CosmicCrypt
      */
-    public static async decrypt(buffer: Buffer, password: Buffer): Promise<Buffer> {
-        return await decrypt(buffer, password);
+    public static async decryptPBKDF2(buffer: Buffer, password: Buffer): Promise<Buffer> {
+        return decryptPBKDF2(buffer, password);
     }
 
     /**
@@ -74,8 +81,8 @@ export class CosmicCrypt {
      * @returns {Buffer}
      * @memberof CosmicCrypt
      */
-    public static decryptSync(buffer: Buffer, password: Buffer): Buffer {
-        return decryptSync(buffer, password);
+    public static decryptPBKDF2Sync(buffer: Buffer, password: Buffer): Buffer {
+        return decryptPBKDF2Sync(buffer, password);
     }
 
     /**
