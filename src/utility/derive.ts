@@ -25,8 +25,8 @@ export async function deriveKey(password: Buffer, salt: Buffer, rounds: number):
   const half = hex.length / 2;
 
   return {
-    derivedKey: Buffer.from(hex.substring(0, half)),
-    hmacKey: Buffer.from(hex.substring(half, half))
+    derivedKey: Buffer.from(hex.substr(0, half)),
+    hmacKey: Buffer.from(hex.substr(half, half))
   };
 }
 
@@ -42,8 +42,12 @@ export function deriveKeySync(password: Buffer, salt: Buffer, rounds: number): K
   const hex = key.toString('hex');
   const half = hex.length / 2;
 
+  console.log({
+    derivedKey: Buffer.from(hex.substr(0, half)),
+    hmacKey: Buffer.from(hex.substr(half, half))
+  });
   return {
-    derivedKey: Buffer.from(hex.substring(0, half)),
-    hmacKey: Buffer.from(hex.substring(half, half))
+    derivedKey: Buffer.from(hex.substr(0, half)),
+    hmacKey: Buffer.from(hex.substr(half, half))
   };
 }
