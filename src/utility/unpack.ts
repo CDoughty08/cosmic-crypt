@@ -27,33 +27,36 @@ export function unpack(buffer: Buffer): EncryptedData {
   }
 
   // Unpack and unmix header
-  const header = buffer.slice(0, metaLength);
   const saltPosition = (MARKER.length * 2) + ( ROUNDS_SIZE * 2) + (IV_LENGTH * 2);
-  const salt = header.slice(
+  const salt = buffer.slice(
     saltPosition,
     SALT_LENGTH * 2 + saltPosition
   );
 
-  console.log('salt: ' + salt);
-  console.log(header.toString('hex'));
-  for (let i = 0; i < header.byteLength; i++) {
+  const encoded = buffer.slice(0, saltPosition);
+  const headerRaw = Buffer.from(encoded.toString(), 'hex');
+  const saltRaw = Buffer.from(salt.toString(), 'hex');
+
+  for (let i = 0; i < encoded.byteLength; i++) {
     // tslint:disable-next-line:no-bitwise
-    header[i] ^= salt[i % (salt.byteLength - 1)];
+    encoded[i] = headerRaw[i] ^ saltRaw[i % (saltRaw.byteLength - 1)];
   }
 
-  if ( Buffer.from(header.slice(0, MARKER.length * 2).toString(), 'hex').compare(Buffer.from(MARKER)) !== 0 ) {
+  const headerDecoded = Buffer.from(encoded.slice(0, MARKER.length + ROUNDS_SIZE + IV_LENGTH).toString('hex'));
+
+  if ( Buffer.from(headerDecoded.slice(0, MARKER.length * 2).toString(), 'hex').compare(Buffer.from(MARKER)) !== 0 ) {
     throw { code: UnpackErrorCode.MISSING_MARKER, message: 'Decrypt Error' };
   }
 
   let offset = MARKER.length * 2;
-  const rounds = header.slice(offset, (ROUNDS_SIZE * 2) + offset );
+  const rounds = headerDecoded.slice(offset, (ROUNDS_SIZE * 2) + offset );
   offset += ( ROUNDS_SIZE * 2);
 
-  const iv = header.slice(offset, IV_LENGTH * 2 + offset);
+  const iv = headerDecoded.slice(offset, IV_LENGTH * 2 + offset);
 
   offset += IV_LENGTH * 2;
   offset += SALT_LENGTH * 2;
-  const hmac = header.slice(offset, HMAC_LENGTH * 2 + offset);
+  const hmac = buffer.slice(offset, HMAC_LENGTH * 2 + offset);
 
   offset += HMAC_LENGTH * 2;
   const encrypted = buffer.slice(offset);

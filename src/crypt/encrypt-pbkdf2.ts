@@ -133,8 +133,6 @@ export function encryptPBKDF2Sync(buffer: Buffer, password: Buffer, iv: Buffer, 
     header[i] ^= salt[i % (salt.byteLength - 1)];
   }
 
-  console.log('salt: ' + saltHex);
-  console.log('header: ' + header.toString('hex'));
   return Buffer.from(
     [
       header.toString('hex'),
