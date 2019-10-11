@@ -16,3 +16,4 @@ export const ROUNDS_SIZE = 4;
 // tslint:disable-next-line:no-var-requires
 export const VERSION = require('../../package.json').version as string;
 export const MARKER = 'CCRYPT' as string;
+export const MARKER_BUFFER = Buffer.from(MARKER).toString('hex');

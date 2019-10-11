@@ -11,7 +11,7 @@ export class CosmicCrypt {
      * @returns {Promise<utility.CryptCredentials>}
      * @memberof CosmicCrypt
      */
-    public static async generateCredentials(): Promise<utility.CryptCredentials> {
+    public static async generatePBKDF2Credentials(): Promise<utility.CryptCredentials> {
         const res = await Promise.all([
           utility.randomBytes(utility.PASS_LENGTH),
           utility.randomBytes(utility.IV_LENGTH),
@@ -25,7 +25,7 @@ export class CosmicCrypt {
         };
     }
 
-    public static generateCredentialsSync(): utility.CryptCredentials {
+    public static generatePBKDF2CredentialsSync(): utility.CryptCredentials {
         return {
             iv: utility.randomBytesSync(utility.IV_LENGTH),
             password: utility.randomBytesSync(utility.PASS_LENGTH),

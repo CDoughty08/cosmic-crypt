@@ -26,21 +26,34 @@ export function unpack(buffer: Buffer): EncryptedData {
     throw { code: UnpackErrorCode.INVALID_META_LENGTH, message: 'Decrypt Error' };
   }
 
-  if ( Buffer.from(buffer.slice(0, MARKER.length * 2).toString(), 'hex').compare(Buffer.from(MARKER)) !== 0 ) {
+  // Unpack and unmix header
+  const header = buffer.slice(0, metaLength);
+  const saltPosition = (MARKER.length * 2) + ( ROUNDS_SIZE * 2) + (IV_LENGTH * 2);
+  const salt = header.slice(
+    saltPosition,
+    SALT_LENGTH * 2 + saltPosition
+  );
+
+  console.log('salt: ' + salt);
+  console.log(header.toString('hex'));
+  for (let i = 0; i < header.byteLength; i++) {
+    // tslint:disable-next-line:no-bitwise
+    header[i] ^= salt[i % (salt.byteLength - 1)];
+  }
+
+  if ( Buffer.from(header.slice(0, MARKER.length * 2).toString(), 'hex').compare(Buffer.from(MARKER)) !== 0 ) {
     throw { code: UnpackErrorCode.MISSING_MARKER, message: 'Decrypt Error' };
   }
 
   let offset = MARKER.length * 2;
-  const rounds = buffer.slice(offset, (ROUNDS_SIZE * 2) + offset );
+  const rounds = header.slice(offset, (ROUNDS_SIZE * 2) + offset );
   offset += ( ROUNDS_SIZE * 2);
 
-  const iv = buffer.slice(offset, IV_LENGTH * 2 + offset);
+  const iv = header.slice(offset, IV_LENGTH * 2 + offset);
 
   offset += IV_LENGTH * 2;
-  const salt = buffer.slice(offset, SALT_LENGTH * 2 + offset);
-
   offset += SALT_LENGTH * 2;
-  const hmac = buffer.slice(offset, HMAC_LENGTH * 2 + offset);
+  const hmac = header.slice(offset, HMAC_LENGTH * 2 + offset);
 
   offset += HMAC_LENGTH * 2;
   const encrypted = buffer.slice(offset);

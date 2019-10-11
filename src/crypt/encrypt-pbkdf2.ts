@@ -13,7 +13,8 @@ import {
 
   // tslint:disable-next-line:ordered-imports
   // VERSION,
-  MARKER
+  MARKER,
+  MARKER_BUFFER
 } from '../utility';
 
 import * as crypto from 'crypto';
@@ -66,7 +67,7 @@ export async function encryptPBKDF2(buffer: Buffer, password: Buffer, iv: Buffer
   const digest = hmac.digest('hex');
 
   return Buffer.from([
-    Buffer.from(MARKER).toString('hex'),
+    MARKER_BUFFER,
     roundsHex,
     ivHex,
     saltHex,
@@ -117,11 +118,26 @@ export function encryptPBKDF2Sync(buffer: Buffer, password: Buffer, iv: Buffer, 
 
   const digest = hmac.digest('hex');
 
+  // XOR header with salt to mix output
+  const header = Buffer.from(
+    [
+      MARKER_BUFFER,
+      roundsHex,
+      ivHex
+    ].join(''),
+    'hex'
+  );
+
+  for (let i = 0; i < header.byteLength; i++) {
+    // tslint:disable-next-line:no-bitwise
+    header[i] ^= salt[i % (salt.byteLength - 1)];
+  }
+
+  console.log('salt: ' + saltHex);
+  console.log('header: ' + header.toString('hex'));
   return Buffer.from(
     [
-      Buffer.from(MARKER).toString('hex'),
-      roundsHex,
-      ivHex,
+      header.toString('hex'),
       saltHex,
       digest,
       data
