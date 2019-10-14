@@ -22,7 +22,7 @@ export function unpack(buffer: Buffer): EncryptedData {
     SALT_LENGTH * 2 + saltPosition
   );
 
-  const encoded = buffer.slice(0, saltPosition);
+  const encoded = Buffer.from(buffer.slice(0, saltPosition));
   const headerRaw = Buffer.from(encoded.toString(), 'hex');
   const saltRaw = Buffer.from(salt.toString(), 'hex');
 
@@ -56,6 +56,7 @@ export function unpack(buffer: Buffer): EncryptedData {
   }
 
   return {
+    headerRaw,
     encrypted,
     hmac,
     iv,

@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 
-import { MARKER, MARKER_BUFFER } from '../../utility/constants';
+import { MARKER_BUFFER } from '../../utility/constants';
 import { KeyMetadata } from '../../utility/derive';
 
 import { HMAC_ALGORITHM, PBKDF2_CIPHER } from './constants';
@@ -19,14 +19,6 @@ export function doPBKDF2Encrypt(rawData: Buffer, iv: Buffer, salt: Buffer, round
     ]
   ).toString('hex');
 
-  hmac.update(MARKER);
-  hmac.update(roundsHex);
-  hmac.update(data);
-  hmac.update(ivHex);
-  hmac.update(saltHex);
-
-  const digest = hmac.digest('hex');
-
   // XOR header with salt to mix output
   const header = Buffer.from(
     [
@@ -41,6 +33,12 @@ export function doPBKDF2Encrypt(rawData: Buffer, iv: Buffer, salt: Buffer, round
     // tslint:disable-next-line:no-bitwise
     header[i] ^= salt[i % (salt.byteLength - 1)];
   }
+
+  hmac.update(header);
+  hmac.update(saltHex);
+  hmac.update(data);
+
+  const digest = hmac.digest('hex');
 
   return Buffer.from(
     [

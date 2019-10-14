@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 
-import { DecryptErrorCode, MARKER } from '../../utility/constants';
+import { DecryptErrorCode } from '../../utility/constants';
 import { KeyMetadata } from '../../utility/derive';
 
 import { EncryptedData, HMAC_ALGORITHM, PBKDF2_CIPHER } from './constants';
@@ -8,11 +8,9 @@ import { EncryptedData, HMAC_ALGORITHM, PBKDF2_CIPHER } from './constants';
 export function doPBKDF2Decrypt(data: EncryptedData, keyInfo: KeyMetadata) {
   const hmac = crypto.createHmac(HMAC_ALGORITHM, keyInfo.hmacKey);
 
-  hmac.update(MARKER);
-  hmac.update(data.rounds);
-  hmac.update(data.encrypted);
-  hmac.update(data.iv);
+  hmac.update(data.headerRaw);
   hmac.update(data.salt);
+  hmac.update(data.encrypted);
 
   const digest = Buffer.from(hmac.digest('hex'));
 

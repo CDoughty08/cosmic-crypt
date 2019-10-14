@@ -14,6 +14,7 @@ export const SALT_LENGTH = 32;
 export const ROUNDS_SIZE = 4;
 
 export interface EncryptedData {
+  headerRaw: Buffer;
   encrypted: Buffer;
   iv: Buffer;
   hmac: Buffer;
