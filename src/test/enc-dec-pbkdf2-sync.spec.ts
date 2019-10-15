@@ -6,6 +6,7 @@ import {
   EncryptErrorCode,
   UnpackErrorCode
 } from '..';
+import { PBKDF2HeaderSize, PBKDF2TrailerSize } from '../lib/pbkdf2/constants';
 
 describe('Encrypt/Decrypt Sync', () => {
   const text = Buffer.from('Test Data!');
@@ -70,11 +71,15 @@ describe('Encrypt/Decrypt Sync', () => {
   });
 
   it('should fail with encrypted data is incorrect length', () => {
-    let invalidEncryptedData = CosmicCrypt.encryptPBKDF2Sync(text, { password, iv, salt });
-    invalidEncryptedData = invalidEncryptedData.slice(0, invalidEncryptedData.length - 10);
+    const validEncryptedData = CosmicCrypt.encryptPBKDF2Sync(text, { password, iv, salt });
+    const invalidData = Buffer.concat([
+      validEncryptedData.slice(0, PBKDF2HeaderSize),
+      validEncryptedData.slice(PBKDF2HeaderSize, PBKDF2HeaderSize + 1),
+      validEncryptedData.slice(validEncryptedData.byteLength - PBKDF2TrailerSize)
+    ]);
 
     try {
-      assert(CosmicCrypt.decryptPBKDF2Sync(invalidEncryptedData, password), 'Should be decrypt error');
+      assert(CosmicCrypt.decryptPBKDF2Sync(invalidData, password), 'Should be decrypt error');
     }
     catch (e) {
       assert(e.code === UnpackErrorCode.INVALID_ENCRYPTED_DATA, e.message);

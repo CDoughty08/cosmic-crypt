@@ -1,3 +1,5 @@
+import { MARKER } from '../../utility/constants';
+
 export const HMAC_ALGORITHM = 'sha512';
 export const PBKDF2_CIPHER = 'aes-256-cbc';
 export const DERIVE_ALGORITHM = 'sha512';
@@ -12,6 +14,9 @@ export const HMAC_LENGTH = 64;
 export const SALT_LENGTH = 32;
 
 export const ROUNDS_SIZE = 4;
+
+export const PBKDF2HeaderSize = ( MARKER.length * 2) + (ROUNDS_SIZE * 2) + ( IV_LENGTH * 2);
+export const PBKDF2TrailerSize = ( HMAC_LENGTH * 2 ) + ( SALT_LENGTH * 2);
 
 export interface EncryptedData {
   headerRaw: Buffer;

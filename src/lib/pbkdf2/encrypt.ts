@@ -43,9 +43,9 @@ export function doPBKDF2Encrypt(rawData: Buffer, iv: Buffer, salt: Buffer, round
   return Buffer.from(
     [
       header.toString('hex'),
-      saltHex,
+      data,
       digest,
-      data
+      saltHex
     ].join('')
   );
 }
