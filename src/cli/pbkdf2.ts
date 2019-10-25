@@ -1,31 +1,20 @@
 import * as fs from 'fs';
-import * as path from 'path';
 
 import * as commander from 'commander';
-import * as inquirer from 'inquirer';
 
 import { CosmicCrypt } from '../cosmic-crypt';
+import { fileOverwritePrompt, keyLocationPrompt } from './prompts';
 
 export async function handlePBKDF2CLIEncrypt() {
   const creds = CosmicCrypt.generatePBKDF2CredentialsSync();
 
   if (!commander.keyfile) {
     // 1: Prompt for where to save the keyfile ( always saved with 400 permissions )
-    const keyLocPrompt = await inquirer.prompt({
-      type: 'input',
-      name: 'keyFileLocation',
-      message: 'Where to save the generated key file?',
-      default: path.resolve(process.cwd(), 'ccrypt.key')
-    });
+    const keyLocPrompt = await keyLocationPrompt();
 
     let overwrite = true;
     if (fs.existsSync(keyLocPrompt.keyFileLocation)) {
-      const overwritePrompt = await inquirer.prompt({
-        type: 'confirm',
-        message: 'File already exists. Try to overwrite it?',
-        name: 'overwrite',
-        default: false
-      });
+      const overwritePrompt = await fileOverwritePrompt();
 
       overwrite = overwritePrompt.overwrite;
     }
