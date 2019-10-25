@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-import * as inquirer from 'inquirer';
-
 import { version } from '../../package.json';
 
 import * as commander from 'commander';
 
 import { handlePBKDF2CLIDecrypt, handlePBKDF2CLIEncrypt } from './pbkdf2';
+
+import { kdfPrompt, modePrompt, typePrompt } from './prompts';
+
+const validModes = new Set(['symmetric', 'asymmetric']);
 
 commander
   // tslint:disable-next-line:no-var-requires
@@ -19,15 +21,28 @@ commander
   .parse(process.argv);
 
 async function processCli() {
-  if ((!commander.encrypt && !commander.decrypt) || (commander.encrypt && commander.decrypt)) {
-    console.log('Must specify either --encrypt, or --decrypt');
-    process.exit(1);
+  if (commander.encrypt && commander.decrypt) {
+    console.log(`You must choose either --encrypt or --decrypt`);
+    return process.exit(1);
+  }
+
+  if (!commander.encrypt && !commander.decrypt) {
+    const whichPrompt = await typePrompt();
+
+    commander[whichPrompt.type] = true;
   }
 
   if (!commander.mode) {
-    console.log('Must specify a valid --mode');
-    process.exit(1);
+    const whichPrompt = await modePrompt();
+
+    commander.mode = whichPrompt.mode;
   }
+  else if (!validModes.has(commander.mode.toLowerCase())) {
+    console.log(`'${commander.mode}' is not a valid mode`);
+    return process.exit(1);
+  }
+
+  commander.mode = commander.mode.toLowerCase();
 
   const mode = commander.encrypt ? 'encrypt' : 'decrypt';
 
@@ -36,21 +51,14 @@ async function processCli() {
       case 'encrypt':
         switch (`${commander.mode}`.toLowerCase()) {
           case 'symmetric': {
-            const whichPrompt = await inquirer.prompt({
-              name: 'kdf',
-              type: 'list',
-              choices: ['PBKDF2', 'SCRYPT'],
-              default: 0,
-              message: 'Which KDF to use?'
-            });
+            const whichPrompt = await kdfPrompt();
 
-            if (whichPrompt.kdf === 'PBKDF2') {
+            if (whichPrompt.kdfType === 'PBKDF2') {
               await handlePBKDF2CLIEncrypt();
             }
-            if (whichPrompt.kdf === 'SCRYPT') {
+            if (whichPrompt.kdfType === 'SCRYPT') {
               console.log('Not implemented yet');
-              process.exit(1);
-              return;
+              return process.exit(1);
             }
             break;
           }
@@ -63,21 +71,14 @@ async function processCli() {
       case 'decrypt':
         switch (`${commander.mode}`.toLowerCase()) {
           case 'symmetric': {
-            const whichPrompt = await inquirer.prompt({
-              name: 'kdf',
-              type: 'list',
-              choices: ['PBKDF2', 'SCRYPT'],
-              default: 0,
-              message: 'Which KDF to use?'
-            });
+            const whichPrompt = await kdfPrompt();
 
-            if (whichPrompt.kdf === 'PBKDF2') {
+            if (whichPrompt.kdfType === 'PBKDF2') {
               handlePBKDF2CLIDecrypt();
             }
-            if (whichPrompt.kdf === 'SCRYPT') {
+            if (whichPrompt.kdfType === 'SCRYPT') {
               console.log('Not implemented yet');
-              process.exit(1);
-              return;
+              return process.exit(1);
             }
             break;
           }
@@ -91,9 +92,9 @@ async function processCli() {
   }
   catch (e) {
     console.error(e);
-    process.exit(1);
+    return process.exit(1);
   }
-  process.exit(0);
+  return process.exit(0);
 }
 
 processCli();
