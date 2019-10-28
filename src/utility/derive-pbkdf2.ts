@@ -7,7 +7,8 @@ export interface KeyMetadata {
   hmacKey: Buffer;
 }
 
-export async function deriveKey(password: Buffer, salt: Buffer, rounds: number): Promise<KeyMetadata> {
+export async function derivePBKDF2Key(password: Buffer, salt: Buffer, rounds: number): Promise<KeyMetadata> {
+
   const key = await pbkdf2(
     password.toString('hex'),
     salt,
@@ -25,7 +26,7 @@ export async function deriveKey(password: Buffer, salt: Buffer, rounds: number):
   };
 }
 
-export function deriveKeySync(password: Buffer, salt: Buffer, rounds: number): KeyMetadata {
+export function derivePBKDF2KeySync(password: Buffer, salt: Buffer, rounds: number): KeyMetadata {
   const key = pbkdf2Sync(
     password.toString('hex'),
     salt,

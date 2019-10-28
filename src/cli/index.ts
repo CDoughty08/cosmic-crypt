@@ -3,7 +3,8 @@ import { version } from '../../package.json';
 
 import * as commander from 'commander';
 
-import { handlePBKDF2CLIDecrypt, handlePBKDF2CLIEncrypt } from './pbkdf2';
+import { handlePBKDF2CLI } from './pbkdf2';
+import { handleScryptCLI } from './scrypt.js';
 
 import { kdfPrompt, modePrompt, typePrompt } from './prompts';
 
@@ -44,50 +45,26 @@ async function processCli() {
 
   commander.mode = commander.mode.toLowerCase();
 
-  const mode = commander.encrypt ? 'encrypt' : 'decrypt';
+  const type = commander.encrypt ? 'encrypt' : 'decrypt';
 
   try {
-    switch (mode) {
-      case 'encrypt':
-        switch (`${commander.mode}`.toLowerCase()) {
-          case 'symmetric': {
-            const whichPrompt = await kdfPrompt();
+    switch (`${commander.mode}`.toLowerCase()) {
+      case 'symmetric': {
+        const whichPrompt = await kdfPrompt();
 
-            if (whichPrompt.kdfType === 'PBKDF2') {
-              await handlePBKDF2CLIEncrypt();
-            }
-            if (whichPrompt.kdfType === 'SCRYPT') {
-              console.log('Not implemented yet');
-              return process.exit(1);
-            }
-            break;
-          }
-          case 'asymmetric': {
-            // TODO:
-            break;
-          }
+        if (whichPrompt.kdfType === 'PBKDF2') {
+          await handlePBKDF2CLI(type);
+        }
+        if (whichPrompt.kdfType === 'SCRYPT') {
+          await handleScryptCLI(type);
+          return process.exit(1);
         }
         break;
-      case 'decrypt':
-        switch (`${commander.mode}`.toLowerCase()) {
-          case 'symmetric': {
-            const whichPrompt = await kdfPrompt();
-
-            if (whichPrompt.kdfType === 'PBKDF2') {
-              handlePBKDF2CLIDecrypt();
-            }
-            if (whichPrompt.kdfType === 'SCRYPT') {
-              console.log('Not implemented yet');
-              return process.exit(1);
-            }
-            break;
-          }
-          case 'asymmetric': {
-            // TODO:
-            break;
-          }
-        }
+      }
+      case 'asymmetric': {
+        // TODO:
         break;
+      }
     }
   }
   catch (e) {

@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 
 import { DecryptErrorCode } from '../../utility/constants';
-import { KeyMetadata } from '../../utility/derive';
+import { KeyMetadata } from '../../utility/derive-pbkdf2';
 
 import { EncryptedData, HMAC_ALGORITHM, PBKDF2_CIPHER } from './constants';
 

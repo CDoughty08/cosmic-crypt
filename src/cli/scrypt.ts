@@ -5,8 +5,8 @@ import * as commander from 'commander';
 import { CosmicCrypt } from '../cosmic-crypt';
 import { fileOverwritePrompt, keyLocationPrompt } from './prompts';
 
-async function handlePBKDF2CLIEncrypt() {
-  const creds = CosmicCrypt.generatePBKDF2CredentialsSync();
+async function handleSCryptCLIEncrypt() {
+  const creds = CosmicCrypt.generateSCryptCredentialsSync();
 
   if (!commander.keyfile) {
     // 1: Prompt for where to save the keyfile ( always saved with 400 permissions )
@@ -33,32 +33,32 @@ async function handlePBKDF2CLIEncrypt() {
     creds.password = fs.readFileSync(commander.keyfile);
   }
 
-  const encrypted = CosmicCrypt.encryptPBKDF2Sync(
-    fs.readFileSync(commander.infile),
-    creds
-  );
+  // const encrypted = CosmicCrypt.encryptPBKDF2Sync(
+  //   fs.readFileSync(commander.infile),
+  //   creds
+  // );
 
-  fs.writeFileSync(commander.outfile, encrypted);
-  console.log(`Encrypted content written to ${commander.outfile}`);
+  // fs.writeFileSync(commander.outfile, encrypted);
+  // console.log(`Encrypted content written to ${commander.outfile}`);
 }
 
-async function handlePBKDF2CLIDecrypt() {
+async function handleSCryptCLIDecrypt() {
   if (!fs.existsSync(commander.keyfile)) {
     console.log(`Key file: '${commander.keyfile}' does not exist.`);
     process.exit(1);
   }
 
-  const decrypted = CosmicCrypt.decryptPBKDF2Sync(fs.readFileSync(commander.infile), fs.readFileSync(commander.keyfile));
+  // const decrypted = CosmicCrypt.decryptPBKDF2Sync(fs.readFileSync(commander.infile), fs.readFileSync(commander.keyfile));
 
-  fs.writeFileSync(commander.outfile, decrypted);
-  console.log(`Decrypted content written to ${commander.outfile}`);
+  // fs.writeFileSync(commander.outfile, decrypted);
+  // console.log(`Decrypted content written to ${commander.outfile}`);
 }
 
-export async function handlePBKDF2CLI(type: 'encrypt' | 'decrypt') {
+export async function handleScryptCLI(type: 'encrypt' | 'decrypt') {
   switch (type) {
     case 'encrypt':
-      return handlePBKDF2CLIEncrypt();
+      return handleSCryptCLIEncrypt();
     case 'decrypt':
-      return handlePBKDF2CLIDecrypt();
+      return handleSCryptCLIDecrypt();
   }
 }

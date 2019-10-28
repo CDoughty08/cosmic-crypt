@@ -1,9 +1,14 @@
 export const MARKER = 'CCRYPT';
 export const MARKER_BUFFER = Buffer.from(MARKER);
 
-export interface CryptCredentials {
+export interface PBKDF2CryptCredentials {
   password: Buffer;
   iv: Buffer;
+  salt: Buffer;
+}
+
+export interface SCryptCredentials {
+  password: Buffer;
   salt: Buffer;
 }
 

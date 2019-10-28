@@ -1,4 +1,4 @@
-import { deriveKey, deriveKeySync } from '../utility/derive';
+import { derivePBKDF2Key, derivePBKDF2KeySync } from '../utility/derive-pbkdf2';
 
 import { checkPBKDF2Inputs } from '../lib/pbkdf2/check-inputs';
 import { doPBKDF2Encrypt } from '../lib/pbkdf2/encrypt';
@@ -8,7 +8,7 @@ export async function encryptPBKDF2(buffer: Buffer, password: Buffer, iv: Buffer
   checkPBKDF2Inputs(password, salt, iv);
 
   const { actualRounds, roundsBuffer } = getPBKDF2Rounds(rounds);
-  const keyInfo = await deriveKey(password, salt, actualRounds);
+  const keyInfo = await derivePBKDF2Key(password, salt, actualRounds);
 
   return doPBKDF2Encrypt(buffer, iv, salt, roundsBuffer, keyInfo);
 }
@@ -17,7 +17,7 @@ export function encryptPBKDF2Sync(buffer: Buffer, password: Buffer, iv: Buffer, 
   checkPBKDF2Inputs(password, salt, iv);
 
   const { actualRounds, roundsBuffer } = getPBKDF2Rounds(rounds);
-  const keyInfo = deriveKeySync(password, salt, actualRounds);
+  const keyInfo = derivePBKDF2KeySync(password, salt, actualRounds);
 
   return doPBKDF2Encrypt(buffer, iv, salt, roundsBuffer, keyInfo);
 }
