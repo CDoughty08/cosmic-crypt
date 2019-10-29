@@ -1,6 +1,7 @@
 import { pbkdf2, pbkdf2Sync } from './crypto';
 
-import { DERIVE_ALGORITHM, PASS_KEY_SIZE } from '../lib/pbkdf2/constants';
+import { PASS_KEY_SIZE } from '../lib/common/constants';
+import { DERIVE_ALGORITHM } from '../lib/pbkdf2/constants';
 
 export interface KeyMetadata {
   derivedKey: Buffer;

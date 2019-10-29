@@ -1,11 +1,10 @@
-import { EncryptErrorCode } from '../../utility/constants';
 import {
   IV_LENGTH,
-  PASS_LENGTH,
-  SALT_LENGTH
-} from './constants';
+  PASS_LENGTH
+} from '../pbkdf2/constants';
+import { EncryptErrorCode, SALT_LENGTH } from './constants';
 
-export function checkPBKDF2Inputs(password: Buffer, salt: Buffer, iv: Buffer) {
+export function checkAsymmetricInputs(password: Buffer, salt: Buffer, iv: Buffer) {
   if (password.length < PASS_LENGTH) {
     throw { code: EncryptErrorCode.PASSWORD_TOO_SHORT, message: `Password must be ${PASS_LENGTH} bytes or more.` };
   }

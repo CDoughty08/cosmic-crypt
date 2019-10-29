@@ -1,9 +1,13 @@
 import { decryptPBKDF2, decryptPBKDF2Sync } from './crypt/decrypt-pbkdf2';
 import { encryptPBKDF2, encryptPBKDF2Sync } from './crypt/encrypt-pbkdf2';
 
-import { IV_LENGTH, PASS_LENGTH, SALT_LENGTH } from './lib/pbkdf2/constants';
-import { MARKER, PBKDF2CryptCredentials, SCryptCredentials } from './utility/constants';
+import { MARKER_BUFFER, SALT_LENGTH, UnpackErrorCode } from './lib/common/constants';
+import { MARKER, PBKDF2CryptCredentials, ScryptCredentials } from './lib/common/constants';
+import { IV_LENGTH, PASS_LENGTH } from './lib/pbkdf2/constants';
 import { randomBytes, randomBytesSync } from './utility/crypto';
+
+import { decryptScrypt, decryptScryptSync } from './crypt/decrypt-scrypt';
+import { encryptScrypt, encryptScryptSync } from './crypt/encrypt-scrypt';
 
 export class CosmicCrypt {
   /**
@@ -105,18 +109,20 @@ export class CosmicCrypt {
    * Generate credentials set using secure random bytes
    *
    * @static
-   * @returns {Promise<SCryptCredentials>}
+   * @returns {Promise<ScryptCredentials>}
    * @memberof CosmicCrypt
    */
-  public static async  generateSCryptCredentials(): Promise<SCryptCredentials> {
+  public static async  generateScryptCredentials(): Promise<ScryptCredentials> {
     const res = await Promise.all([
       randomBytes(PASS_LENGTH),
+      randomBytes(IV_LENGTH),
       randomBytes(SALT_LENGTH)
     ]);
 
     return {
       password: res[0],
-      salt: res[1]
+      iv: res[1],
+      salt: res[2]
     };
   }
 
@@ -124,11 +130,12 @@ export class CosmicCrypt {
    * Generate credentials set using secure random bytes
    *
    * @static
-   * @returns {SCryptCredentials}
+   * @returns {ScryptCredentials}
    * @memberof CosmicCrypt
    */
-  public static generateSCryptCredentialsSync(): SCryptCredentials {
+  public static generateScryptCredentialsSync(): ScryptCredentials {
     return {
+      iv: randomBytesSync(IV_LENGTH),
       password: randomBytesSync(PASS_LENGTH),
       salt: randomBytesSync(SALT_LENGTH)
     };
@@ -139,13 +146,12 @@ export class CosmicCrypt {
    *
    * @static
    * @param {Buffer} buffer
-   * @param {SCryptCredentials} credentials
+   * @param {ScryptCredentials} credentials
    * @returns {Promise<Buffer>}
    * @memberof CosmicCrypt
    */
-  public static async encryptSCrypt(_buffer: Buffer, _credentials: SCryptCredentials): Promise<Buffer> {
-    // return encryptPBKDF2(buffer, credentials.password, credentials.iv, credentials.salt);
-    return Buffer.from('TODO');
+  public static async encryptScrypt(buffer: Buffer, credentials: ScryptCredentials): Promise<Buffer> {
+    return encryptScrypt(buffer, credentials.password, credentials.iv, credentials.salt);
   }
 
   /**
@@ -153,13 +159,12 @@ export class CosmicCrypt {
    *
    * @static
    * @param {Buffer} buffer
-   * @param {SCryptCredentials} credentials
+   * @param {ScryptCredentials} credentials
    * @returns {Buffer}
    * @memberof CosmicCrypt
    */
-  public static encryptSCryptSync(_buffer: Buffer, _credentials: SCryptCredentials): Buffer {
-    // return encryptPBKDF2Sync(buffer, credentials.password, credentials.iv, credentials.salt);
-    return Buffer.from('TODO');
+  public static encryptScryptSync(buffer: Buffer, credentials: ScryptCredentials): Buffer {
+    return encryptScryptSync(buffer, credentials.password, credentials.iv, credentials.salt);
   }
 
   /**
@@ -171,9 +176,8 @@ export class CosmicCrypt {
    * @returns {Promise<Buffer>}
    * @memberof CosmicCrypt
    */
-  public static async decryptSCrypt(_buffer: Buffer, _password: Buffer): Promise<Buffer> {
-    // return decryptPBKDF2(buffer, password);
-    return Buffer.from('TODO');
+  public static async decryptScrypt(buffer: Buffer, password: Buffer): Promise<Buffer> {
+    return decryptScrypt(buffer, password);
   }
 
   /**
@@ -185,9 +189,8 @@ export class CosmicCrypt {
    * @returns {Buffer}
    * @memberof CosmicCrypt
    */
-  public static decryptSCryptSync(_buffer: Buffer, _password: Buffer): Buffer {
-    // return decryptPBKDF2Sync(buffer, password);
-    return Buffer.from('TODO');
+  public static decryptScryptSync(buffer: Buffer, password: Buffer): Buffer {
+    return decryptScryptSync(buffer, password);
   }
 
   /**
@@ -198,7 +201,29 @@ export class CosmicCrypt {
    * @returns {boolean}
    * @memberof CosmicCrypt
    */
-  public static isCosmicCryptBuffer(buffer: Buffer): boolean {
-    return (Buffer.from(buffer.slice(0, MARKER.length * 2).toString(), 'hex').compare(Buffer.from(MARKER)) === 0);
+  public static isCosmicCryptBuffer(buffer: Buffer): UnpackErrorCode {
+    if (buffer.byteLength < (MARKER.length * 2) + (SALT_LENGTH * 2)) {
+      return UnpackErrorCode.INVALID_META_LENGTH;
+    }
+    // Unpack and unmix header
+    const saltPosition = buffer.byteLength - SALT_LENGTH * 2;
+    const salt = buffer.slice(saltPosition);
+
+    const encoded = Buffer.from(buffer.slice(0, MARKER.length * 2));
+    const headerRaw = Buffer.from(encoded.toString(), 'hex');
+    const saltRaw = Buffer.from(salt.toString(), 'hex');
+
+    for (let i = 0; i < encoded.byteLength; i++) {
+      // tslint:disable-next-line:no-bitwise
+      encoded[i] = headerRaw[i] ^ saltRaw[i % (saltRaw.byteLength - 1)];
+    }
+
+    const headerDecoded = Buffer.from(encoded.slice(0, (MARKER.length * 2) / 2).toString('hex'));
+
+    if (Buffer.from(headerDecoded.slice(0, MARKER.length * 2).toString(), 'hex').compare(MARKER_BUFFER) !== 0) {
+      return UnpackErrorCode.MISSING_MARKER;
+    }
+
+    return UnpackErrorCode.SUCCESS;
   }
 }

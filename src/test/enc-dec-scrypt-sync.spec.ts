@@ -6,9 +6,9 @@ import {
   EncryptErrorCode,
   UnpackErrorCode
 } from '..';
-import { PBKDF2HeaderSize, PBKDF2TrailerSize } from '../lib/pbkdf2/constants';
+import { ScryptHeaderSize, ScryptTrailerSize } from '../lib/scrypt/constants';
 
-describe('Encrypt/Decrypt Sync (PBKDF2 KDF)', () => {
+describe('Encrypt/Decrypt Sync (SCRYPT KDF)', () => {
   const text = Buffer.from('Test Data!');
   const password = Buffer.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ12');
   const iv = Buffer.from('1234123412341234');
@@ -18,7 +18,7 @@ describe('Encrypt/Decrypt Sync (PBKDF2 KDF)', () => {
     const shortPassword = Buffer.from('This password is too short');
 
     try {
-      CosmicCrypt.encryptPBKDF2Sync(text, { password: shortPassword, iv, salt });
+      CosmicCrypt.encryptScryptSync(text, { password: shortPassword, iv, salt });
     }
     catch (e) {
       assert(e.code === EncryptErrorCode.PASSWORD_TOO_SHORT);
@@ -29,7 +29,7 @@ describe('Encrypt/Decrypt Sync (PBKDF2 KDF)', () => {
     const badiv = Buffer.from('1234...');
 
     try {
-      CosmicCrypt.encryptPBKDF2Sync(text, { password, iv: badiv, salt });
+      CosmicCrypt.encryptScryptSync(text, { password, iv: badiv, salt });
     }
     catch (e) {
       assert(e.code === EncryptErrorCode.IV_INVALID_LENGTH);
@@ -40,7 +40,7 @@ describe('Encrypt/Decrypt Sync (PBKDF2 KDF)', () => {
     const badsalt = Buffer.from('not salty enough');
 
     try {
-      CosmicCrypt.encryptPBKDF2Sync(text, { password, iv, salt: badsalt });
+      CosmicCrypt.encryptScryptSync(text, { password, iv, salt: badsalt });
     }
     catch (e) {
       assert(e.code === EncryptErrorCode.SALT_INVALID_LENGTH);
@@ -49,11 +49,11 @@ describe('Encrypt/Decrypt Sync (PBKDF2 KDF)', () => {
 
   it('should fail if signatures do not match', () => {
 
-    const invalidEncryptedData = CosmicCrypt.encryptPBKDF2Sync(text, { password, iv, salt });
+    const invalidEncryptedData = CosmicCrypt.encryptScryptSync(text, { password, iv, salt });
     invalidEncryptedData[invalidEncryptedData.length - 10] = 1;
 
     try {
-      assert(CosmicCrypt.decryptPBKDF2Sync(invalidEncryptedData, password), 'Should be authentication error');
+      assert(CosmicCrypt.decryptScryptSync(invalidEncryptedData, password), 'Should be authentication error');
     }
     catch (e) {
       assert(e.code === DecryptErrorCode.AUTHENTICATION_ERROR, e.message);
@@ -63,7 +63,7 @@ describe('Encrypt/Decrypt Sync (PBKDF2 KDF)', () => {
   it('should fail with invalid metadata', () => {
     const invalidEncryptedData = Buffer.from('Invalid encryption data');
     try {
-      assert(CosmicCrypt.decryptPBKDF2Sync(invalidEncryptedData, password), 'Should be decrypt error');
+      assert(CosmicCrypt.decryptScryptSync(invalidEncryptedData, password), 'Should be decrypt error');
     }
     catch (e) {
       assert(e.code === UnpackErrorCode.INVALID_META_LENGTH, e.message);
@@ -71,15 +71,15 @@ describe('Encrypt/Decrypt Sync (PBKDF2 KDF)', () => {
   });
 
   it('should fail with encrypted data is incorrect length', () => {
-    const validEncryptedData = CosmicCrypt.encryptPBKDF2Sync(text, { password, iv, salt });
+    const validEncryptedData = CosmicCrypt.encryptScryptSync(text, { password, iv, salt });
     const invalidData = Buffer.concat([
-      validEncryptedData.slice(0, PBKDF2HeaderSize),
-      validEncryptedData.slice(PBKDF2HeaderSize, PBKDF2HeaderSize + 1),
-      validEncryptedData.slice(validEncryptedData.byteLength - PBKDF2TrailerSize)
+      validEncryptedData.slice(0, ScryptHeaderSize),
+      validEncryptedData.slice(ScryptHeaderSize, ScryptHeaderSize + 1),
+      validEncryptedData.slice(validEncryptedData.byteLength - ScryptTrailerSize)
     ]);
 
     try {
-      assert(CosmicCrypt.decryptPBKDF2Sync(invalidData, password), 'Should be decrypt error');
+      assert(CosmicCrypt.decryptScryptSync(invalidData, password), 'Should be decrypt error');
     }
     catch (e) {
       assert(e.code === UnpackErrorCode.INVALID_ENCRYPTED_DATA, e.message);
@@ -87,18 +87,18 @@ describe('Encrypt/Decrypt Sync (PBKDF2 KDF)', () => {
   });
 
   it('should encrypt and decrypt data correctly', () => {
-    const encrypted = CosmicCrypt.encryptPBKDF2Sync(text, { password, iv, salt });
+    const encrypted = CosmicCrypt.encryptScryptSync(text, { password, iv, salt });
 
-    const decrypted = CosmicCrypt.decryptPBKDF2Sync(encrypted, password);
+    const decrypted = CosmicCrypt.decryptScryptSync(encrypted, password);
 
     assert(decrypted.equals(text));
   });
 
   it('should fail if marker is missing or invalid', () => {
     try {
-      const encrypted = CosmicCrypt.encryptPBKDF2Sync(text, { password, iv, salt });
+      const encrypted = CosmicCrypt.encryptScryptSync(text, { password, iv, salt });
       encrypted[0] = 0;
-      CosmicCrypt.decryptPBKDF2Sync(encrypted, password);
+      CosmicCrypt.decryptScryptSync(encrypted, password);
     }
     catch (e) {
       assert(e.code === UnpackErrorCode.MISSING_MARKER, e.message);

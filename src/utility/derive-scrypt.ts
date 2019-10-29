@@ -1,18 +1,18 @@
 import { scrypt, ScryptOptions, scryptSync } from './crypto';
 
-import { PASS_KEY_SIZE } from '../lib/pbkdf2/constants';
+import { PASS_KEY_SIZE } from '../lib/common/constants';
 
 export interface KeyMetadata {
   derivedKey: Buffer;
   hmacKey: Buffer;
 }
 
-export async function deriveSCryptKey(password: Buffer, salt: Buffer, opts: ScryptOptions): Promise<KeyMetadata> {
+export async function deriveScryptKey(password: Buffer, salt: Buffer, opts?: ScryptOptions): Promise<KeyMetadata> {
   const key = await scrypt(
     password.toString('hex'),
     salt,
     PASS_KEY_SIZE,
-    opts
+    opts || {}
   );
 
   const hex = key.toString('hex');
@@ -24,12 +24,12 @@ export async function deriveSCryptKey(password: Buffer, salt: Buffer, opts: Scry
   };
 }
 
-export function deriveSCryptKeySync(password: Buffer, salt: Buffer, opts: ScryptOptions): KeyMetadata {
+export function deriveScryptKeySync(password: Buffer, salt: Buffer, opts?: ScryptOptions): KeyMetadata {
   const key = scryptSync(
     password.toString('hex'),
     salt,
     PASS_KEY_SIZE,
-    opts
+    opts || {}
   );
 
   const hex = key.toString('hex');

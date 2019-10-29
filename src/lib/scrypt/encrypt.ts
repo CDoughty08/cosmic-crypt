@@ -3,14 +3,13 @@ import * as crypto from 'crypto';
 import { KeyMetadata } from '../../utility/derive-pbkdf2';
 
 import { HMAC_ALGORITHM, MARKER_BUFFER } from '../common/constants';
-import { PBKDF2_CIPHER } from './constants';
+import { SCRYPT_CIPHER } from './constants';
 
-export function doPBKDF2Encrypt(rawData: Buffer, iv: Buffer, salt: Buffer, rounds: Buffer, keyInfo: KeyMetadata) {
+export function doScryptEncrypt(rawData: Buffer, iv: Buffer, salt: Buffer, keyInfo: KeyMetadata) {
   const ivHex = iv.toString('hex');
   const saltHex = salt.toString('hex');
-  const roundsHex = rounds.toString('hex');
 
-  const cipher = crypto.createCipheriv(PBKDF2_CIPHER, keyInfo.derivedKey, iv);
+  const cipher = crypto.createCipheriv(SCRYPT_CIPHER, keyInfo.derivedKey, iv);
   const hmac = crypto.createHmac(HMAC_ALGORITHM, keyInfo.hmacKey);
   const data = Buffer.concat(
     [
@@ -23,7 +22,6 @@ export function doPBKDF2Encrypt(rawData: Buffer, iv: Buffer, salt: Buffer, round
   const header = Buffer.from(
     [
       MARKER_BUFFER.toString('hex'),
-      roundsHex,
       ivHex
     ].join(''),
     'hex'

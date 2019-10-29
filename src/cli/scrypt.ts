@@ -5,8 +5,8 @@ import * as commander from 'commander';
 import { CosmicCrypt } from '../cosmic-crypt';
 import { fileOverwritePrompt, keyLocationPrompt } from './prompts';
 
-async function handleSCryptCLIEncrypt() {
-  const creds = CosmicCrypt.generateSCryptCredentialsSync();
+async function handleScryptCLIEncrypt() {
+  const creds = CosmicCrypt.generateScryptCredentialsSync();
 
   if (!commander.keyfile) {
     // 1: Prompt for where to save the keyfile ( always saved with 400 permissions )
@@ -42,7 +42,7 @@ async function handleSCryptCLIEncrypt() {
   // console.log(`Encrypted content written to ${commander.outfile}`);
 }
 
-async function handleSCryptCLIDecrypt() {
+async function handleScryptCLIDecrypt() {
   if (!fs.existsSync(commander.keyfile)) {
     console.log(`Key file: '${commander.keyfile}' does not exist.`);
     process.exit(1);
@@ -57,8 +57,8 @@ async function handleSCryptCLIDecrypt() {
 export async function handleScryptCLI(type: 'encrypt' | 'decrypt') {
   switch (type) {
     case 'encrypt':
-      return handleSCryptCLIEncrypt();
+      return handleScryptCLIEncrypt();
     case 'decrypt':
-      return handleSCryptCLIDecrypt();
+      return handleScryptCLIDecrypt();
   }
 }

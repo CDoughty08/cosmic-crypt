@@ -3,9 +3,9 @@ import * as crypto from 'crypto';
 import { KeyMetadata } from '../../utility/derive-pbkdf2';
 
 import { DecryptErrorCode, HMAC_ALGORITHM } from '../common/constants';
-import { EncryptedData, PBKDF2_CIPHER } from './constants';
+import { EncryptedData, SCRYPT_CIPHER } from './constants';
 
-export function doPBKDF2Decrypt(data: EncryptedData, keyInfo: KeyMetadata) {
+export function doScryptDecrypt(data: EncryptedData, keyInfo: KeyMetadata) {
   const hmac = crypto.createHmac(HMAC_ALGORITHM, keyInfo.hmacKey);
 
   hmac.update(data.headerRaw);
@@ -21,7 +21,7 @@ export function doPBKDF2Decrypt(data: EncryptedData, keyInfo: KeyMetadata) {
     };
   }
 
-  const cipher = crypto.createDecipheriv(PBKDF2_CIPHER, keyInfo.derivedKey, Buffer.from(data.iv.toString(), 'hex'));
+  const cipher = crypto.createDecipheriv(SCRYPT_CIPHER, keyInfo.derivedKey, Buffer.from(data.iv.toString(), 'hex'));
 
   const deciphered = Buffer.from(
     [
