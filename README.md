@@ -33,21 +33,29 @@ async function sample() {
 sample();
 ```
 
-Expectations
-============
-This utility makes a few assumptions about what you want to do, as it was made for a simple purpose. It currently does not provide a large feature set.
+Data layouts
+==============
 
-Cipher text is encrypted and return as `hex`
+Symmetric Encryption:
 
-The cipher algorithm is currently locked to `aes-256-cbc`
+Shows data layout by
 
-The IV must be 128 bit, 16 bytes.
+KDF  
+[byte alignment]  
+[data type]
 
-Passwords must be 64 bytes or larger.
+```ts
+PBKDF2
+[   0  - 11   ][   12 - 19   ][       20 - 83       ][    84 - N    ][(Len - 192) - (Len - 64)][(Len - 64) - EOF]
+[CCRYPT Marker][PBKDF2 Rounds][Initialization Vector][Encrypted Data][     HMAC Signature     ][      SALT      ]
+```
 
-The Salt must be 32 bytes.
 
-pbkdf2 iterations defaults to 10000.
+```ts
+SCRYPT
+[   0  - 11   ][       16 - 79       ][    80 - N    ][(Len - 192) - (Len - 64)][(Len - 64) - EOF]
+[CCRYPT Marker][Initialization Vector][Encrypted Data][     HMAC Signature     ][      SALT      ]
+```
 
 Supplied Error Codes
 ====================

@@ -6,7 +6,7 @@ import {
   EncryptErrorCode,
   UnpackErrorCode
 } from '..';
-import { PBKDF2HeaderSize, PBKDF2TrailerSize } from '../lib/pbkdf2/constants';
+import { PBKDF2HeaderSize, PBKDF2TrailerSize } from '../lib/common/constants';
 
 describe('Encrypt/Decrypt Sync (PBKDF2 KDF)', () => {
   const text = Buffer.from('Test Data!');

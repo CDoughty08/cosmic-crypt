@@ -1,4 +1,4 @@
-import { PBKDF2_ROUNDS, ROUNDS_SIZE } from './constants';
+import { PBKDF2_ROUNDS, ROUNDS_SIZE } from '../common/constants';
 
 export function getPBKDF2Rounds(rounds?: number) {
   const actualRounds = rounds || PBKDF2_ROUNDS;

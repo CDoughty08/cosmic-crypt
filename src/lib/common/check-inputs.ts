@@ -1,8 +1,9 @@
 import {
+  EncryptErrorCode,
   IV_LENGTH,
-  PASS_LENGTH
-} from '../pbkdf2/constants';
-import { EncryptErrorCode, SALT_LENGTH } from './constants';
+  PASS_LENGTH,
+  SALT_LENGTH
+} from './constants';
 
 export function checkAsymmetricInputs(password: Buffer, salt: Buffer, iv: Buffer) {
   if (password.length < PASS_LENGTH) {

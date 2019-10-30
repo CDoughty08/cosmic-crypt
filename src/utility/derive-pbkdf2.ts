@@ -1,12 +1,7 @@
 import { pbkdf2, pbkdf2Sync } from './crypto';
 
-import { PASS_KEY_SIZE } from '../lib/common/constants';
-import { DERIVE_ALGORITHM } from '../lib/pbkdf2/constants';
-
-export interface KeyMetadata {
-  derivedKey: Buffer;
-  hmacKey: Buffer;
-}
+import { DERIVE_ALGORITHM, PASS_KEY_SIZE } from '../lib/common/constants';
+import { KeyMetadata } from './derive-scrypt';
 
 export async function derivePBKDF2Key(password: Buffer, salt: Buffer, rounds: number): Promise<KeyMetadata> {
 

@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import {
   CosmicCrypt
 } from '..';
-import { MARKER, MARKER_BUFFER, SALT_LENGTH, UnpackErrorCode } from '../lib/common/constants';
+import { HEX_MARKER_BUFFER, MARKER, SALT_LENGTH, UnpackErrorCode } from '../lib/common/constants';
 import { randomBytes } from '../utility/crypto';
 
 describe('isCosmicCryptBuffer', () => {
@@ -22,7 +22,7 @@ describe('isCosmicCryptBuffer', () => {
 
   it('should fail if marker is improperly mixed and valid', async () => {
     const salt = await randomBytes(SALT_LENGTH);
-    const buf = Buffer.from(MARKER_BUFFER);
+    const buf = Buffer.from(HEX_MARKER_BUFFER);
 
     for (let i = buf.byteLength; i > 0; i--) {
       // tslint:disable-next-line:no-bitwise
@@ -38,7 +38,7 @@ describe('isCosmicCryptBuffer', () => {
 
   it('should succeed if marker is properly mixed and valid', async () => {
     const salt = await randomBytes(SALT_LENGTH);
-    const buf = Buffer.from(MARKER_BUFFER);
+    const buf = Buffer.from(HEX_MARKER_BUFFER);
 
     for (let i = 0; i < buf.byteLength; i++) {
       // tslint:disable-next-line:no-bitwise

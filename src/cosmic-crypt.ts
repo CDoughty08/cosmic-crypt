@@ -1,9 +1,8 @@
 import { decryptPBKDF2, decryptPBKDF2Sync } from './crypt/decrypt-pbkdf2';
 import { encryptPBKDF2, encryptPBKDF2Sync } from './crypt/encrypt-pbkdf2';
 
-import { MARKER_BUFFER, SALT_LENGTH, UnpackErrorCode } from './lib/common/constants';
+import { HEX_MARKER_BUFFER, IV_LENGTH, PASS_LENGTH, SALT_LENGTH, UnpackErrorCode } from './lib/common/constants';
 import { MARKER, PBKDF2CryptCredentials, ScryptCredentials } from './lib/common/constants';
-import { IV_LENGTH, PASS_LENGTH } from './lib/pbkdf2/constants';
 import { randomBytes, randomBytesSync } from './utility/crypto';
 
 import { decryptScrypt, decryptScryptSync } from './crypt/decrypt-scrypt';
@@ -220,7 +219,7 @@ export class CosmicCrypt {
 
     const headerDecoded = Buffer.from(encoded.slice(0, (MARKER.length * 2) / 2).toString('hex'));
 
-    if (Buffer.from(headerDecoded.slice(0, MARKER.length * 2).toString(), 'hex').compare(MARKER_BUFFER) !== 0) {
+    if (Buffer.from(headerDecoded.slice(0, MARKER.length * 2).toString(), 'hex').compare(HEX_MARKER_BUFFER) !== 0) {
       return UnpackErrorCode.MISSING_MARKER;
     }
 

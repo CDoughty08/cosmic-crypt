@@ -6,7 +6,7 @@ import {
   EncryptErrorCode,
   UnpackErrorCode
 } from '..';
-import { ScryptHeaderSize, ScryptTrailerSize } from '../lib/scrypt/constants';
+import { ScryptHeaderSize, ScryptTrailerSize } from '../lib/common/constants';
 
 describe('Encrypt/Decrypt (SCRYPT KDF)', () => {
   const text = Buffer.from('Test Data!');
