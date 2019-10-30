@@ -48,7 +48,10 @@ async function handlePBKDF2CLIDecrypt() {
     process.exit(1);
   }
 
-  const decrypted = CosmicCrypt.decryptPBKDF2Sync(fs.readFileSync(commander.infile), fs.readFileSync(commander.keyfile));
+  const decrypted = CosmicCrypt.decryptPBKDF2Sync(
+    fs.readFileSync(commander.infile),
+    fs.readFileSync(commander.keyfile)
+  );
 
   fs.writeFileSync(commander.outfile, decrypted);
   console.log(`Decrypted content written to ${commander.outfile}`);

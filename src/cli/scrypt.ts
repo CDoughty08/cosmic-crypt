@@ -33,13 +33,13 @@ async function handleScryptCLIEncrypt() {
     creds.password = fs.readFileSync(commander.keyfile);
   }
 
-  // const encrypted = CosmicCrypt.encryptPBKDF2Sync(
-  //   fs.readFileSync(commander.infile),
-  //   creds
-  // );
+  const encrypted = CosmicCrypt.encryptScryptSync(
+    fs.readFileSync(commander.infile),
+    creds
+  );
 
-  // fs.writeFileSync(commander.outfile, encrypted);
-  // console.log(`Encrypted content written to ${commander.outfile}`);
+  fs.writeFileSync(commander.outfile, encrypted);
+  console.log(`Encrypted content written to ${commander.outfile}`);
 }
 
 async function handleScryptCLIDecrypt() {
@@ -48,10 +48,13 @@ async function handleScryptCLIDecrypt() {
     process.exit(1);
   }
 
-  // const decrypted = CosmicCrypt.decryptPBKDF2Sync(fs.readFileSync(commander.infile), fs.readFileSync(commander.keyfile));
+  const decrypted = CosmicCrypt.decryptScryptSync(
+    fs.readFileSync(commander.infile),
+    fs.readFileSync(commander.keyfile)
+  );
 
-  // fs.writeFileSync(commander.outfile, decrypted);
-  // console.log(`Decrypted content written to ${commander.outfile}`);
+  fs.writeFileSync(commander.outfile, decrypted);
+  console.log(`Decrypted content written to ${commander.outfile}`);
 }
 
 export async function handleScryptCLI(type: 'encrypt' | 'decrypt') {
