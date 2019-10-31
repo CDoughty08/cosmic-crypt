@@ -5,11 +5,11 @@ import * as inquirer from 'inquirer';
 /**
  * Generic Prompts
  */
-export const fileOverwritePrompt =
-  () => inquirer.prompt({
+export const confirmPrompt =
+  (message: string) => inquirer.prompt({
     type: 'confirm',
-    message: 'File already exists. Try to overwrite it?',
-    name: 'overwrite',
+    message,
+    name: 'value',
     default: false
   });
 
@@ -19,6 +19,14 @@ export const keyLocationPrompt =
     name: 'keyFileLocation',
     message: 'Where to save the generated key file?',
     default: path.resolve(process.cwd(), 'ccrypt.key')
+  });
+
+export const fileLocationPrompt =
+  (message: string, defaultValue?: string) => inquirer.prompt({
+    type: 'input',
+    name: 'path',
+    message,
+    default: defaultValue
   });
 
 /**

@@ -3,10 +3,9 @@ import { version } from '../../package.json';
 
 import * as commander from 'commander';
 
-import { handlePBKDF2CLI } from './pbkdf2';
-import { handleScryptCLI } from './scrypt.js';
-
 import { kdfPrompt, modePrompt, typePrompt } from './prompts';
+import { handleCLISymmetricDecrypt } from './symmetric-decrypt.js';
+import { handleCLISymmetricEncrypt } from './symmetric-encrypt.js';
 
 const validModes = new Set(['symmetric', 'asymmetric']);
 
@@ -52,13 +51,10 @@ async function processCli() {
       case 'symmetric': {
         const whichPrompt = await kdfPrompt();
 
-        if (whichPrompt.kdfType === 'PBKDF2') {
-          await handlePBKDF2CLI(type);
-        }
-        if (whichPrompt.kdfType === 'SCRYPT') {
-          await handleScryptCLI(type);
-          return process.exit(1);
-        }
+        type === 'encrypt'
+          ? await handleCLISymmetricEncrypt(whichPrompt.kdfType)
+          : await handleCLISymmetricDecrypt(whichPrompt.kdfType);
+
         break;
       }
       case 'asymmetric': {
