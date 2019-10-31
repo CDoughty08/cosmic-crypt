@@ -1,14 +1,14 @@
+import { randomBytes, randomBytesSync, ScryptOptions } from './utility/crypto';
+
 import { checkAsymmetricInputs } from './lib/common/check-inputs';
 import { HEX_MARKER_BUFFER, IV_LENGTH, PASS_LENGTH, SALT_LENGTH, UnpackErrorCode } from './lib/common/constants';
 import { MARKER, PBKDF2CryptCredentials, ScryptCredentials } from './lib/common/constants';
-import { randomBytes, randomBytesSync, ScryptOptions } from './utility/crypto';
-import { deriveScryptKey, deriveScryptKeySync } from './utility/derive-scrypt';
+import { deriveSymmetricKey, deriveSymmetricKeySync } from './lib/common/derive-kdf';
+import { unpack } from './lib/common/unpack';
 
 import { doSymmetricDecrypt } from './lib/common/symmetric-decrypt';
 import { doSymmetricEncrypt } from './lib/common/symmetric-encrypt';
-import { unpack } from './lib/common/unpack';
 import { getPBKDF2Rounds } from './lib/pbkdf2/get-rounds';
-import { derivePBKDF2Key, derivePBKDF2KeySync } from './utility/derive-pbkdf2';
 
 export class CosmicCrypt {
   /**
@@ -64,7 +64,7 @@ export class CosmicCrypt {
     checkAsymmetricInputs(password, salt, iv);
 
     const { actualRounds, roundsBuffer } = getPBKDF2Rounds(rounds);
-    const keyInfo = derivePBKDF2KeySync(password, salt, actualRounds);
+    const keyInfo = deriveSymmetricKeySync('PBKDF2', password, salt, { rounds: actualRounds });
 
     return doSymmetricEncrypt('PBKDF2', buffer, { iv, salt, rounds: roundsBuffer, keyInfo });
   }
@@ -84,7 +84,7 @@ export class CosmicCrypt {
     checkAsymmetricInputs(password, salt, iv);
 
     const { actualRounds, roundsBuffer } = getPBKDF2Rounds(rounds);
-    const keyInfo = derivePBKDF2KeySync(password, salt, actualRounds);
+    const keyInfo = deriveSymmetricKeySync('PBKDF2', password, salt, { rounds: actualRounds });
 
     return doSymmetricEncrypt('PBKDF2', buffer, { iv, salt, rounds: roundsBuffer, keyInfo });
   }
@@ -104,7 +104,7 @@ export class CosmicCrypt {
     const roundsBuffer = Buffer.from(unpacked.rounds.toString(), 'hex');
     const rounds = roundsBuffer.readInt32LE(0);
 
-    const keyInfo = await derivePBKDF2Key(password, Buffer.from(unpacked.salt.toString(), 'hex'), rounds);
+    const keyInfo = await deriveSymmetricKey('PBKDF2', password, Buffer.from(unpacked.salt.toString(), 'hex'), { rounds });
 
     return doSymmetricDecrypt(unpacked, keyInfo);
   }
@@ -124,7 +124,7 @@ export class CosmicCrypt {
     const roundsBuffer = Buffer.from(unpacked.rounds.toString(), 'hex');
     const rounds = roundsBuffer.readInt32LE(0);
 
-    const keyInfo = derivePBKDF2KeySync(password, Buffer.from(unpacked.salt.toString(), 'hex'), rounds);
+    const keyInfo = deriveSymmetricKeySync('PBKDF2', password, Buffer.from(unpacked.salt.toString(), 'hex'), { rounds });
 
     return doSymmetricDecrypt(unpacked, keyInfo);
   }
@@ -183,7 +183,7 @@ export class CosmicCrypt {
 
     checkAsymmetricInputs(password, salt, iv);
 
-    const keyInfo = await deriveScryptKey(password, salt, opts);
+    const keyInfo = await deriveSymmetricKey('SCRYPT', password, salt, opts);
 
     return doSymmetricEncrypt('SCRYPT', buffer, { iv, salt, keyInfo });
   }
@@ -202,7 +202,7 @@ export class CosmicCrypt {
 
     checkAsymmetricInputs(password, salt, iv);
 
-    const keyInfo = deriveScryptKeySync(password, salt, opts);
+    const keyInfo = deriveSymmetricKeySync('SCRYPT', password, salt, opts);
 
     return doSymmetricEncrypt('SCRYPT', buffer, { iv, salt, keyInfo });
   }
@@ -216,10 +216,10 @@ export class CosmicCrypt {
    * @returns {Promise<Buffer>}
    * @memberof CosmicCrypt
    */
-  public static async decryptScrypt(buffer: Buffer, password: Buffer): Promise<Buffer> {
+  public static async decryptScrypt(buffer: Buffer, password: Buffer, opts?: ScryptOptions): Promise<Buffer> {
     const unpacked = unpack('SCRYPT', buffer);
 
-    const keyInfo = await deriveScryptKey(password, Buffer.from(unpacked.salt.toString(), 'hex'));
+    const keyInfo = await deriveSymmetricKey('SCRYPT', password, Buffer.from(unpacked.salt.toString(), 'hex'), opts);
 
     return doSymmetricDecrypt(unpacked, keyInfo);
   }
@@ -233,10 +233,10 @@ export class CosmicCrypt {
    * @returns {Buffer}
    * @memberof CosmicCrypt
    */
-  public static decryptScryptSync(buffer: Buffer, password: Buffer): Buffer {
+  public static decryptScryptSync(buffer: Buffer, password: Buffer, opts?: ScryptOptions): Buffer {
     const unpacked = unpack('SCRYPT', buffer);
 
-    const keyInfo = deriveScryptKeySync(password, Buffer.from(unpacked.salt.toString(), 'hex'));
+    const keyInfo = deriveSymmetricKeySync('SCRYPT', password, Buffer.from(unpacked.salt.toString(), 'hex'), opts);
 
     return doSymmetricDecrypt(unpacked, keyInfo);
   }

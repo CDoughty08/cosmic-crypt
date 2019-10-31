@@ -57,3 +57,8 @@ export enum UnpackErrorCode {
   INVALID_META_LENGTH,
   INVALID_ENCRYPTED_DATA
 }
+
+export interface KeyMetadata {
+  derivedKey: Buffer;
+  hmacKey: Buffer;
+}
