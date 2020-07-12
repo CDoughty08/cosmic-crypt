@@ -29,13 +29,7 @@ export interface KeyMetadata {
   hmacKey: Buffer;
 }
 
-export interface PBKDF2CryptCredentials {
-  password: Buffer;
-  iv: Buffer;
-  salt: Buffer;
-}
-
-export interface ScryptCredentials {
+export interface Credentials {
   password: Buffer;
   iv: Buffer;
   salt: Buffer;

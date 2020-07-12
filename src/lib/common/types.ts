@@ -1,6 +1,6 @@
 import { KeyMetadata } from './constants';
 
-export interface AsymmetricKDFType {
+export interface SymmetricKDFType {
   PBKDF2: {
     iv: Buffer;
     salt: Buffer;

@@ -2,7 +2,7 @@ import { randomBytes, randomBytesSync, ScryptOptions } from './utility/crypto';
 
 import { checkAsymmetricInputs } from './lib/common/check-inputs';
 import { HEX_MARKER_BUFFER, IV_LENGTH, PASS_LENGTH, SALT_LENGTH, UnpackErrorCode } from './lib/common/constants';
-import { MARKER, PBKDF2CryptCredentials, ScryptCredentials } from './lib/common/constants';
+import { MARKER, Credentials } from './lib/common/constants';
 import { deriveSymmetricKey, deriveSymmetricKeySync } from './lib/common/derive-kdf';
 import { unpack } from './lib/common/unpack';
 
@@ -18,10 +18,10 @@ export class CosmicCrypt {
    * Generate credentials set using secure random bytes
    *
    * @static
-   * @returns {Promise<PBKDF2CryptCredentials>}
+   * @returns {Promise<Credentials>}
    * @memberof CosmicCrypt
    */
-  public static async generatePBKDF2Credentials(): Promise<PBKDF2CryptCredentials> {
+  public static async generatePBKDF2Credentials(): Promise<Credentials> {
     const res = await Promise.all([
       randomBytes(PASS_LENGTH),
       randomBytes(IV_LENGTH),
@@ -39,10 +39,10 @@ export class CosmicCrypt {
    * Generate credentials set using secure random bytes
    *
    * @static
-   * @returns {PBKDF2CryptCredentials}
+   * @returns {Credentials}
    * @memberof CosmicCrypt
    */
-  public static generatePBKDF2CredentialsSync(): PBKDF2CryptCredentials {
+  public static generatePBKDF2CredentialsSync(): Credentials {
     return {
       iv: randomBytesSync(IV_LENGTH),
       password: randomBytesSync(PASS_LENGTH),
@@ -50,6 +50,7 @@ export class CosmicCrypt {
     };
   }
 
+  /** */
   /**
    * asynchronous encryption
    *
@@ -59,7 +60,7 @@ export class CosmicCrypt {
    * @returns {Promise<Buffer>}
    * @memberof CosmicCrypt
    */
-  public static async encryptPBKDF2(buffer: Buffer, credentials: PBKDF2CryptCredentials, rounds?: number): Promise<Buffer> {
+  public static async encryptPBKDF2(buffer: Buffer, credentials: Credentials, rounds?: number): Promise<Buffer> {
     const { password, salt, iv } = credentials;
     checkAsymmetricInputs(password, salt, iv);
 
@@ -74,11 +75,11 @@ export class CosmicCrypt {
    *
    * @static
    * @param {Buffer} buffer
-   * @param {PBKDF2CryptCredentials} credentials
+   * @param {Credentials} credentials
    * @returns {Buffer}
    * @memberof CosmicCrypt
    */
-  public static encryptPBKDF2Sync(buffer: Buffer, credentials: PBKDF2CryptCredentials, rounds?: number): Buffer {
+  public static encryptPBKDF2Sync(buffer: Buffer, credentials: Credentials, rounds?: number): Buffer {
     const { password, salt, iv } = credentials;
 
     checkAsymmetricInputs(password, salt, iv);
@@ -137,10 +138,10 @@ export class CosmicCrypt {
    * Generate credentials set using secure random bytes
    *
    * @static
-   * @returns {Promise<ScryptCredentials>}
+   * @returns {Promise<Credentials>}
    * @memberof CosmicCrypt
    */
-  public static async  generateScryptCredentials(): Promise<ScryptCredentials> {
+  public static async  generateScryptCredentials(): Promise<Credentials> {
     const res = await Promise.all([
       randomBytes(PASS_LENGTH),
       randomBytes(IV_LENGTH),
@@ -158,10 +159,10 @@ export class CosmicCrypt {
    * Generate credentials set using secure random bytes
    *
    * @static
-   * @returns {ScryptCredentials}
+   * @returns {Credentials}
    * @memberof CosmicCrypt
    */
-  public static generateScryptCredentialsSync(): ScryptCredentials {
+  public static generateScryptCredentialsSync(): Credentials {
     return {
       iv: randomBytesSync(IV_LENGTH),
       password: randomBytesSync(PASS_LENGTH),
@@ -174,11 +175,11 @@ export class CosmicCrypt {
    *
    * @static
    * @param {Buffer} buffer
-   * @param {ScryptCredentials} credentials
+   * @param {Credentials} credentials
    * @returns {Promise<Buffer>}
    * @memberof CosmicCrypt
    */
-  public static async encryptScrypt(buffer: Buffer, credentials: ScryptCredentials, opts?: ScryptOptions): Promise<Buffer> {
+  public static async encryptScrypt(buffer: Buffer, credentials: Credentials, opts?: ScryptOptions): Promise<Buffer> {
     const { password, salt, iv } = credentials;
 
     checkAsymmetricInputs(password, salt, iv);
@@ -193,11 +194,11 @@ export class CosmicCrypt {
    *
    * @static
    * @param {Buffer} buffer
-   * @param {ScryptCredentials} credentials
+   * @param {Credentials} credentials
    * @returns {Buffer}
    * @memberof CosmicCrypt
    */
-  public static encryptScryptSync(buffer: Buffer, credentials: ScryptCredentials, opts?: ScryptOptions): Buffer {
+  public static encryptScryptSync(buffer: Buffer, credentials: Credentials, opts?: ScryptOptions): Buffer {
     const { password, salt, iv } = credentials;
 
     checkAsymmetricInputs(password, salt, iv);

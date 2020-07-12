@@ -1,11 +1,11 @@
 import * as crypto from 'crypto';
 
 import { HEX_MARKER_BUFFER, HMAC_ALGORITHM, SYMMETRIC_CIPHER } from './constants';
-import { AsymmetricKDFType } from './types';
+import { SymmetricKDFType } from './types';
 
-type PBKDF2KDF = AsymmetricKDFType['PBKDF2'];
+type PBKDF2KDF = SymmetricKDFType['PBKDF2'];
 
-export function doSymmetricEncrypt<K extends keyof AsymmetricKDFType>(kdf: K, rawData: Buffer, opts: AsymmetricKDFType[K]) {
+export function doSymmetricEncrypt<K extends keyof SymmetricKDFType>(kdf: K, rawData: Buffer, opts: SymmetricKDFType[K]) {
   const cipher = crypto.createCipheriv(SYMMETRIC_CIPHER, opts.keyInfo.derivedKey, opts.iv);
   const hmac = crypto.createHmac(HMAC_ALGORITHM, opts.keyInfo.hmacKey);
   const data = Buffer.concat(
