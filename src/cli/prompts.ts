@@ -41,15 +41,6 @@ export const typePrompt =
     message: 'What operation are you performing?'
   });
 
-export const modePrompt =
-  () => inquirer.prompt({
-    name: 'mode',
-    type: 'list',
-    choices: ['symmetric', 'asymmetric'],
-    default: 0,
-    message: 'Which mode to use?'
-  });
-
 export const kdfPrompt =
   () => inquirer.prompt({
     name: 'kdfType',
