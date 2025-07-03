@@ -20,7 +20,7 @@ describe('Encrypt/Decrypt Sync', () => {
     try {
       encryptSync(text, shortPassword, iv, salt);
     }
-    catch (e) {
+    catch (e: any) {
       assert(e.code === EncryptErrorCode.PASSWORD_TOO_SHORT);
     }
   });
@@ -31,7 +31,7 @@ describe('Encrypt/Decrypt Sync', () => {
     try {
       encryptSync(text, password, badiv, salt);
     }
-    catch (e) {
+    catch (e: any) {
       assert(e.code === EncryptErrorCode.IV_INVALID_LENGTH);
     }
   });
@@ -42,7 +42,7 @@ describe('Encrypt/Decrypt Sync', () => {
     try {
       encryptSync(text, password, iv, badsalt);
     }
-    catch (e) {
+    catch (e: any) {
       assert(e.code === EncryptErrorCode.SALT_INVALID_LENGTH);
     }
   });
@@ -54,7 +54,7 @@ describe('Encrypt/Decrypt Sync', () => {
     try {
       assert(decryptSync(invalidEncryptedData, password), 'Should be authentication error');
     }
-    catch (e) {
+    catch (e: any) {
       assert(e.code === DecryptErrorCode.AUTHENTICATION_ERROR, e.message);
     }
   });
@@ -64,7 +64,7 @@ describe('Encrypt/Decrypt Sync', () => {
     try {
       assert(decryptSync(invalidEncryptedData, password), 'Should be decrypt error');
     }
-    catch (e) {
+    catch (e: any) {
       assert(e.code === UnpackErrorCode.INVALID_META_LENGTH, e.message);
     }
   });
@@ -76,7 +76,7 @@ describe('Encrypt/Decrypt Sync', () => {
     try {
       assert(decryptSync(invalidEncryptedData, password), 'Should be decrypt error');
     }
-    catch (e) {
+    catch (e: any) {
       assert(e.code === UnpackErrorCode.INVALID_ENCRYPTED_DATA, e.message);
     }
   });
@@ -95,7 +95,7 @@ describe('Encrypt/Decrypt Sync', () => {
       encrypted[0] = 0;
       decryptSync(encrypted, password);
     }
-    catch (e) {
+    catch (e: any) {
       assert(e.code === UnpackErrorCode.MISSING_MARKER, e.message);
     }
   });
