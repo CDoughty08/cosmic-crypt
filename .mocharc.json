@@ -1,0 +1,9 @@
+{
+  "require": [
+    "ts-node/register",
+    "source-map-support/register"
+  ],
+  "extensions": ["ts"],
+  "spec": ["src/**/*.spec.ts"],
+  "watch-extensions": ["ts"]
+}
