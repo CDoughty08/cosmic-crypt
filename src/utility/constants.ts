@@ -1,3 +1,5 @@
+import pkg from '../../package.json';
+
 export const HMAC_ALGORITHM = 'sha512';
 export const ENCRYPT_ALGORITHM = 'aes-256-cbc';
 export const DERIVE_ALGORITHM = 'sha512';
@@ -13,6 +15,5 @@ export const SALT_LENGTH = 32;
 
 export const ROUNDS_SIZE = 4;
 
-// tslint:disable-next-line:no-var-requires
-export const VERSION = require('../../package.json').version as string;
+export const VERSION: string = pkg.version;
 export const MARKER = 'CCRYPT' as string;

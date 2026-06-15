@@ -1,5 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/CDoughty08/cosmic-crypt/badge.svg?branch=master)](https://coveralls.io/github/CDoughty08/cosmic-crypt?branch=master)
-[![Build Status](https://travis-ci.org/CDoughty08/cosmic-crypt.svg?branch=master)](https://travis-ci.org/CDoughty08/cosmic-crypt)
+[![CI](https://github.com/CDoughty08/cosmic-crypt/actions/workflows/ci.yml/badge.svg)](https://github.com/CDoughty08/cosmic-crypt/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/cosmic-crypt.svg)](https://badge.fury.io/js/cosmic-crypt)
 
 Installation
