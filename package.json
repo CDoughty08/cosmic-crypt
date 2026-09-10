@@ -37,7 +37,7 @@
     "concurrently": "3.5.0",
     "tsdown": "0.22.2",
     "typescript": "5.9.3",
-    "vitest": "4.1.8"
+    "vitest": "4.1.11"
   },
   "dependencies": {
     "commander": "15.0.0"
